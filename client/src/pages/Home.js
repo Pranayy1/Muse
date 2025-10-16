@@ -355,7 +355,7 @@ const Home = () => {
   if (loading) {
     return (
       <HomeContainer>
-        <LoadingSpinner>ðŸŽµ Loading trending songs...</LoadingSpinner>
+        <LoadingSpinner>Loading trending songs...</LoadingSpinner>
       </HomeContainer>
     );
   }
@@ -371,14 +371,14 @@ const Home = () => {
   return (
     <HomeContainer>
       <WelcomeSection>
-        <WelcomeTitle>ðŸŽµ Welcome to Muse</WelcomeTitle>
+        <WelcomeTitle> Welcome to Muse</WelcomeTitle>
         <WelcomeSubtitle>
           Discover and enjoy millions of songs powered by YouTube
         </WelcomeSubtitle>
       </WelcomeSection>
 
       <Section>
-        <SectionTitle>ðŸ”¥ Trending Now</SectionTitle>
+        <SectionTitle> Trending Now</SectionTitle>
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>

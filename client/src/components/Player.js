@@ -347,8 +347,6 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
   const [isMuted, setIsMuted] = useState(false);
-  const [isShuffled, setIsShuffled] = useState(false);
-  const [isRepeating, setIsRepeating] = useState(false);
   const [player, setPlayer] = useState(null);
 
   const handlePlayerReady = (event) => {

@@ -72,6 +72,10 @@ function App() {
     setIsPlaying(true);
   };
 
+  const resumePlayback = () => {
+    setIsPlaying(true);
+  };
+
   const pauseTrack = () => {
     setIsPlaying(false);
   };
@@ -125,7 +129,7 @@ function App() {
             <Player
               track={currentTrack}
               isPlaying={isPlaying}
-              onPlay={playTrack}
+              onPlay={resumePlayback}
               onPause={pauseTrack}
               onNext={nextTrack}
               onPrevious={previousTrack}
