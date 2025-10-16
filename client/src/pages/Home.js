@@ -219,31 +219,46 @@ const CardActions = styled.div`
 `;
 
 const PlayButton = styled.button`
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 2px solid rgba(56, 189, 248, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1e293b;
+  color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
   
   &:hover {
-    background: linear-gradient(135deg, #0284c7, #1fdf64);
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    border-color: #0284c7;
     transform: scale(1.15);
-    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6);
+    box-shadow: 0 6px 25px rgba(56, 189, 248, 0.7);
+  }
+
+  &:active {
+    transform: scale(1.05);
   }
   
   svg {
-    font-size: 18px;
+    font-size: 20px;
     margin-left: 2px;
   }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 38px;
+    height: 38px;
 
     svg {
       font-size: 16px;
@@ -371,14 +386,14 @@ const Home = () => {
   return (
     <HomeContainer>
       <WelcomeSection>
-        <WelcomeTitle> Welcome to Muse</WelcomeTitle>
+        <WelcomeTitle>🎵 Welcome to Muse</WelcomeTitle>
         <WelcomeSubtitle>
-          Discover and enjoy millions of songs powered by YouTube
+          Discover and enjoy millions of songs powered by YouTube 🎧
         </WelcomeSubtitle>
       </WelcomeSection>
 
       <Section>
-        <SectionTitle> Trending Now</SectionTitle>
+        <SectionTitle>🔥 Trending Now</SectionTitle>
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>
