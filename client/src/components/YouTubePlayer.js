@@ -10,12 +10,6 @@ const PlayerContainer = styled.div`
   opacity: 0.01; /* Nearly invisible but still functional */
 `;
 
-const StyledIframe = styled.iframe`
-  width: 100%;
-  height: 100%;
-  border: none;
-`;
-
 const YouTubePlayer = ({ 
   videoId, 
   isPlaying, 
@@ -25,92 +19,137 @@ const YouTubePlayer = ({
   volume = 50,
   onError 
 }) => {
-  const [player, setPlayer] = useState(null);
-  const [isReady, setIsReady] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const iframeRef = useRef(null);
+  const playerRef = useRef(null);
+  const containerRef = useRef(null);
+  const intervalRef = useRef(null);
+  const [isAPIReady, setIsAPIReady] = useState(false);
 
-  // Simulate player ready
+  // Load YouTube IFrame API
   useEffect(() => {
-    if (videoId && !isReady) {
-      console.log('Setting up YouTube player for video:', videoId);
-      
-      const mockPlayer = {
-        playVideo: () => {
-          console.log('▶️ Playing video:', videoId);
-          if (onStateChange) onStateChange({ data: 1 }); // playing
-        },
-        pauseVideo: () => {
-          console.log('⏸️ Pausing video:', videoId);
-          if (onStateChange) onStateChange({ data: 2 }); // paused
-        },
-        stopVideo: () => {
-          console.log('⏹️ Stopping video:', videoId);
-          if (onStateChange) onStateChange({ data: 0 }); // ended
-        },
-        seekTo: (seconds) => {
-          console.log('⏭️ Seeking to:', seconds);
-          setCurrentTime(seconds);
-        },
-        getCurrentTime: () => currentTime,
-        getDuration: () => 210, // Mock 3.5 minute duration
-        setVolume: (vol) => console.log('🔊 Volume set to:', vol),
-        getPlayerState: () => isPlaying ? 1 : 2
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        console.log('✅ YouTube IFrame API loaded');
+        setIsAPIReady(true);
       };
-
-      setPlayer(mockPlayer);
-      setIsReady(true);
-      
-      if (onReady) {
-        onReady({ target: mockPlayer });
-      }
+    } else {
+      setIsAPIReady(true);
     }
-  }, [videoId, isReady, onReady, onStateChange, currentTime, isPlaying]);
+  }, []);
 
-  // Handle play/pause changes
+  // Initialize player when API is ready and videoId changes
   useEffect(() => {
-    if (player && isReady) {
-      if (isPlaying) {
-        player.playVideo();
-      } else {
-        player.pauseVideo();
-      }
+    if (!isAPIReady || !videoId || !containerRef.current) {
+      return;
     }
-  }, [isPlaying, player, isReady]);
 
-  // Progress simulation
-  useEffect(() => {
-    if (isPlaying && onProgress && isReady) {
-      const interval = setInterval(() => {
-        setCurrentTime(prev => {
-          const newTime = prev + 1;
-          if (onProgress) {
-            onProgress(newTime, 210); // Mock duration
+    // Destroy existing player if any
+    if (playerRef.current && playerRef.current.destroy) {
+      playerRef.current.destroy();
+    }
+
+    console.log('🎬 Creating YouTube player for video:', videoId);
+
+    // Create new player
+    playerRef.current = new window.YT.Player(containerRef.current, {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        modestbranding: 1,
+        rel: 0,
+        fs: 0,
+        iv_load_policy: 3,
+      },
+      events: {
+        onReady: (event) => {
+          console.log('✅ YouTube player ready');
+          if (onReady) {
+            onReady(event);
           }
-          return newTime;
-        });
-      }, 1000);
+        },
+        onStateChange: (event) => {
+          console.log('🔄 Player state changed:', event.data);
+          if (onStateChange) {
+            onStateChange(event);
+          }
+        },
+        onError: (event) => {
+          console.error('❌ YouTube player error:', event.data);
+          if (onError) {
+            onError(event);
+          }
+        },
+      },
+    });
 
-      return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+      }
+    };
+  }, [isAPIReady, videoId]);
+
+  // Handle play/pause
+  useEffect(() => {
+    if (!playerRef.current || !playerRef.current.playVideo) {
+      return;
     }
-  }, [isPlaying, onProgress, isReady]);
+
+    if (isPlaying) {
+      console.log('▶️ Playing video');
+      playerRef.current.playVideo();
+    } else {
+      console.log('⏸️ Pausing video');
+      playerRef.current.pauseVideo();
+    }
+  }, [isPlaying]);
+
+  // Handle volume
+  useEffect(() => {
+    if (playerRef.current && playerRef.current.setVolume && volume !== undefined) {
+      console.log('🔊 Setting volume to:', volume);
+      playerRef.current.setVolume(volume);
+    }
+  }, [volume]);
+
+  // Progress updates
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    if (isPlaying && onProgress && playerRef.current) {
+      intervalRef.current = setInterval(() => {
+        if (playerRef.current && playerRef.current.getCurrentTime && playerRef.current.getDuration) {
+          const currentTime = playerRef.current.getCurrentTime();
+          const duration = playerRef.current.getDuration();
+          onProgress(currentTime, duration);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isPlaying, onProgress]);
 
   if (!videoId) {
     return null;
   }
 
-  // Create YouTube embed URL with autoplay
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&loop=1&playlist=${videoId}&enablejsapi=1&mute=0&start=0&rel=0&modestbranding=1`;
-
   return (
     <PlayerContainer>
-      <StyledIframe
-        ref={iframeRef}
-        src={embedUrl}
-        title="YouTube audio player"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
+      <div ref={containerRef} id={`youtube-player-${videoId}`} />
     </PlayerContainer>
   );
 };

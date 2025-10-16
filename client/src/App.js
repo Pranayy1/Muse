@@ -67,9 +67,24 @@ function App() {
   const [playlist, setPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const playTrack = (track) => {
+  const playTrack = (track, trackList = []) => {
     setCurrentTrack(track);
     setIsPlaying(true);
+    
+    // If a track list is provided, set up the playlist
+    if (trackList.length > 0) {
+      setPlaylist(trackList);
+      const index = trackList.findIndex(t => t.id === track.id);
+      setCurrentIndex(index >= 0 ? index : 0);
+    } else if (playlist.length === 0) {
+      // If no track list and no existing playlist, add this track as the only one
+      setPlaylist([track]);
+      setCurrentIndex(0);
+    } else {
+      // Find the track in the existing playlist
+      const index = playlist.findIndex(t => t.id === track.id);
+      setCurrentIndex(index >= 0 ? index : 0);
+    }
   };
 
   const resumePlayback = () => {
@@ -80,17 +95,71 @@ function App() {
     setIsPlaying(false);
   };
 
+  const getRandomTrackFromSameArtist = () => {
+    if (!currentTrack || playlist.length === 0) return null;
+
+    // Get current artist/channel
+    const currentArtist = currentTrack.channelTitle || currentTrack.artist;
+    
+    // Filter songs from the same artist
+    const sameArtistTracks = playlist.filter(track => {
+      const trackArtist = track.channelTitle || track.artist;
+      return trackArtist === currentArtist && track.id !== currentTrack.id;
+    });
+
+    // If there are songs from the same artist, pick a random one
+    if (sameArtistTracks.length > 0) {
+      const randomIndex = Math.floor(Math.random() * sameArtistTracks.length);
+      const randomTrack = sameArtistTracks[randomIndex];
+      const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
+      return { track: randomTrack, index: playlistIndex };
+    }
+
+    // If no other songs from same artist, pick any random song
+    const otherTracks = playlist.filter(track => track.id !== currentTrack.id);
+    if (otherTracks.length > 0) {
+      const randomIndex = Math.floor(Math.random() * otherTracks.length);
+      const randomTrack = otherTracks[randomIndex];
+      const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
+      return { track: randomTrack, index: playlistIndex };
+    }
+
+    return null;
+  };
+
   const nextTrack = () => {
-    if (currentIndex < playlist.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setCurrentTrack(playlist[currentIndex + 1]);
+    // Try to get a random track from the same artist
+    const randomTrack = getRandomTrackFromSameArtist();
+    
+    if (randomTrack) {
+      setCurrentIndex(randomTrack.index);
+      setCurrentTrack(randomTrack.track);
+      setIsPlaying(true);
+      console.log('🎲 Playing random track from same artist:', randomTrack.track.title);
+    } else if (currentIndex < playlist.length - 1) {
+      // Fallback to sequential if no random track found
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      setCurrentTrack(playlist[nextIndex]);
+      setIsPlaying(true);
     }
   };
 
   const previousTrack = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setCurrentTrack(playlist[currentIndex - 1]);
+    // Try to get a random track from the same artist
+    const randomTrack = getRandomTrackFromSameArtist();
+    
+    if (randomTrack) {
+      setCurrentIndex(randomTrack.index);
+      setCurrentTrack(randomTrack.track);
+      setIsPlaying(true);
+      console.log('🎲 Playing random track from same artist:', randomTrack.track.title);
+    } else if (currentIndex > 0) {
+      // Fallback to sequential if no random track found
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+      setCurrentTrack(playlist[prevIndex]);
+      setIsPlaying(true);
     }
   };
 

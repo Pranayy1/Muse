@@ -349,7 +349,7 @@ const Home = () => {
   }, []);
 
   const handlePlayTrack = (track) => {
-    playTrack(track);
+    playTrack(track, trendingSongs);
   };
 
   if (loading) {

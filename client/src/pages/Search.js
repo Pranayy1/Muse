@@ -395,7 +395,7 @@ const Search = () => {
   };
 
   const handlePlayTrack = (track) => {
-    playTrack(track);
+    playTrack(track, searchResults);
   };
 
   return (
