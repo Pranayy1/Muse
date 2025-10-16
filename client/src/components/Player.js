@@ -6,9 +6,7 @@ import {
   FaStepBackward, 
   FaStepForward,
   FaVolumeUp,
-  FaVolumeMute,
-  FaRandom,
-  FaRedo
+  FaVolumeMute
 } from 'react-icons/fa';
 import YouTubePlayer from './YouTubePlayer';
 
@@ -17,13 +15,21 @@ const PlayerContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(90deg, #1db954 0%, #1ed760 100%);
-  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 15px 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
   z-index: 1000;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(29, 185, 84, 0.3);
+
+  @media (max-width: 768px) {
+    padding: 12px 15px;
+    gap: 10px;
+  }
 `;
 
 const TrackInfo = styled.div`
@@ -31,14 +37,35 @@ const TrackInfo = styled.div`
   align-items: center;
   flex: 1;
   max-width: 300px;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    max-width: 200px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 120px;
+  }
 `;
 
 const TrackImage = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   border-radius: 8px;
   margin-right: 15px;
   object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    width: 45px;
+    height: 45px;
+    margin-right: 10px;
+  }
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 const TrackDetails = styled.div`
@@ -47,34 +74,71 @@ const TrackDetails = styled.div`
 `;
 
 const TrackTitle = styled.div`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 4px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const TrackArtist = styled.div`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
 `;
 
 const PlayerControls = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 500px;
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    max-width: 400px;
+  }
+`;
+
+const ControlButtons = styled.div`
+  display: flex;
   align-items: center;
   gap: 15px;
-  flex: 1;
-  justify-content: center;
+
+  @media (max-width: 768px) {
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const ControlButton = styled.button`
   background: none;
   border: none;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
@@ -84,24 +148,63 @@ const ControlButton = styled.button`
   justify-content: center;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
     transform: scale(1.1);
   }
-  
-  &.play-pause {
-    background: white;
-    color: #1db954;
-    width: 40px;
-    height: 40px;
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.9);
-      transform: scale(1.05);
+
+  svg {
+    font-size: 18px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px;
+
+    svg {
+      font-size: 16px;
     }
   }
+
+  @media (max-width: 480px) {
+    padding: 5px;
+
+    svg {
+      font-size: 14px;
+    }
+  }
+`;
+
+const PlayPauseButton = styled(ControlButton)`
+  background: linear-gradient(135deg, #1db954, #1ed760);
+  color: white;
+  width: 45px;
+  height: 45px;
   
+  &:hover {
+    background: linear-gradient(135deg, #1ed760, #1fdf64);
+    transform: scale(1.1);
+  }
+
   svg {
-    font-size: ${props => props.size === 'large' ? '18px' : '14px'};
+    font-size: 20px;
+  }
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 36px;
+    height: 36px;
+
+    svg {
+      font-size: 16px;
+    }
   }
 `;
 
@@ -109,32 +212,53 @@ const ProgressSection = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;
-  max-width: 400px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
 `;
 
 const TimeDisplay = styled.span`
   font-size: 12px;
-  color: white;
-  min-width: 40px;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 42px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 10px;
+    min-width: 35px;
+  }
 `;
 
 const ProgressBar = styled.div`
   flex: 1;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   position: relative;
   cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    height: 6px;
+  }
+
+  @media (max-width: 480px) {
+    height: 4px;
+
+    &:hover {
+      height: 5px;
+    }
+  }
 `;
 
 const ProgressFill = styled.div`
   height: 100%;
-  background: white;
-  border-radius: 2px;
+  background: linear-gradient(90deg, #1db954, #1ed760);
+  border-radius: 10px;
   width: ${props => props.progress}%;
-  transition: width 0.1s ease;
+  transition: width 0.1s linear;
 `;
 
 const VolumeSection = styled.div`
@@ -142,52 +266,71 @@ const VolumeSection = styled.div`
   align-items: center;
   gap: 10px;
   flex: 1;
-  max-width: 200px;
+  max-width: 150px;
   justify-content: flex-end;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const VolumeButton = styled.button`
   background: none;
   border: none;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
   border-radius: 50%;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
   }
   
   svg {
-    font-size: 16px;
+    font-size: 18px;
   }
 `;
 
 const VolumeSlider = styled.input`
   width: 80px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   outline: none;
   cursor: pointer;
+  appearance: none;
   
   &::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
     height: 12px;
-    background: white;
+    background: #1db954;
     border-radius: 50%;
     cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.2);
+    }
   }
   
   &::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: white;
+    background: #1db954;
     border-radius: 50%;
     cursor: pointer;
     border: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.2);
+    }
   }
 `;
 
@@ -302,20 +445,6 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
         volume={isMuted ? 0 : volume}
       />
       
-      {/* Debug info */}
-      <div style={{ 
-        position: 'absolute', 
-        top: '10px', 
-        right: '10px', 
-        fontSize: '10px', 
-        color: 'rgba(255,255,255,0.5)',
-        background: 'rgba(0,0,0,0.5)',
-        padding: '5px',
-        borderRadius: '3px'
-      }}>
-        ID: {track.id} | Playing: {isPlaying ? 'YES' : 'NO'} | Player: {player ? 'READY' : 'NOT READY'}
-      </div>
-      
       <TrackInfo>
         <TrackImage src={track.thumbnail} alt={track.title} />
         <TrackDetails>
@@ -325,37 +454,28 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
       </TrackInfo>
 
       <PlayerControls>
-        <ControlButton onClick={() => setIsShuffled(!isShuffled)}>
-          <FaRandom style={{ opacity: isShuffled ? 1 : 0.5 }} />
-        </ControlButton>
-        
-        <ControlButton onClick={onPrevious}>
-          <FaStepBackward />
-        </ControlButton>
-        
-        <ControlButton 
-          className="play-pause"
-          onClick={isPlaying ? onPause : onPlay}
-        >
-          {isPlaying ? <FaPause /> : <FaPlay />}
-        </ControlButton>
-        
-        <ControlButton onClick={onNext}>
-          <FaStepForward />
-        </ControlButton>
-        
-        <ControlButton onClick={() => setIsRepeating(!isRepeating)}>
-          <FaRedo style={{ opacity: isRepeating ? 1 : 0.5 }} />
-        </ControlButton>
-      </PlayerControls>
+        <ControlButtons>
+          <ControlButton onClick={onPrevious}>
+            <FaStepBackward />
+          </ControlButton>
+          
+          <PlayPauseButton onClick={isPlaying ? onPause : onPlay}>
+            {isPlaying ? <FaPause /> : <FaPlay />}
+          </PlayPauseButton>
+          
+          <ControlButton onClick={onNext}>
+            <FaStepForward />
+          </ControlButton>
+        </ControlButtons>
 
-      <ProgressSection>
-        <TimeDisplay>{formatTime(currentTime)}</TimeDisplay>
-        <ProgressBar onClick={handleProgressClick}>
-          <ProgressFill progress={(currentTime / duration) * 100} />
-        </ProgressBar>
-        <TimeDisplay>{formatTime(duration)}</TimeDisplay>
-      </ProgressSection>
+        <ProgressSection>
+          <TimeDisplay>{formatTime(currentTime)}</TimeDisplay>
+          <ProgressBar onClick={handleProgressClick}>
+            <ProgressFill progress={(currentTime / duration) * 100 || 0} />
+          </ProgressBar>
+          <TimeDisplay>{formatTime(duration)}</TimeDisplay>
+        </ProgressSection>
+      </PlayerControls>
 
       <VolumeSection>
         <VolumeButton onClick={toggleMute}>
