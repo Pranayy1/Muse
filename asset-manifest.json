@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Muse/static/css/main.f9140e12.css",
+    "main.js": "/Muse/static/js/main.d1b1f900.js",
+    "index.html": "/Muse/index.html",
+    "main.f9140e12.css.map": "/Muse/static/css/main.f9140e12.css.map",
+    "main.d1b1f900.js.map": "/Muse/static/js/main.d1b1f900.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f9140e12.css",
+    "static/js/main.d1b1f900.js"
+  ]
+}
