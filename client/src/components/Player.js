@@ -144,74 +144,83 @@ const ControlButtons = styled.div`
 `;
 
 const ControlButton = styled.button`
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(56, 189, 248, 0.2);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  color: #1e293b;
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
   
   &:hover {
-    color: #1e293b;
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.1);
+    color: white;
+    background: rgba(56, 189, 248, 0.5);
+    border-color: rgba(56, 189, 248, 0.8);
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.5);
   }
 
   svg {
-    font-size: 18px;
+    font-size: 22px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   }
 
   @media (max-width: 768px) {
-    padding: 6px;
+    padding: 8px;
 
     svg {
-      font-size: 16px;
+      font-size: 20px;
     }
   }
 
   @media (max-width: 480px) {
-    padding: 5px;
+    padding: 7px;
 
     svg {
-      font-size: 14px;
+      font-size: 18px;
     }
   }
 `;
 
 const PlayPauseButton = styled(ControlButton)`
   background: linear-gradient(135deg, #38bdf8, #0284c7);
-  color: #1e293b;
-  width: 45px;
-  height: 45px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  width: 52px;
+  height: 52px;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.5);
   
   &:hover {
-    background: linear-gradient(135deg, #0284c7, #1fdf64);
-    transform: scale(1.1);
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    border-color: white;
+    transform: scale(1.2);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.7);
   }
 
   svg {
-    font-size: 20px;
+    font-size: 24px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    width: 46px;
+    height: 46px;
 
     svg {
-      font-size: 18px;
+      font-size: 22px;
     }
   }
 
   @media (max-width: 480px) {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
 
     svg {
-      font-size: 16px;
+      font-size: 20px;
     }
   }
 `;
@@ -283,24 +292,29 @@ const VolumeSection = styled.div`
 `;
 
 const VolumeButton = styled.button`
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(56, 189, 248, 0.2);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  color: #1e293b;
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
   
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #1e293b;
+    background: rgba(56, 189, 248, 0.5);
+    border-color: rgba(56, 189, 248, 0.8);
+    color: white;
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.5);
   }
   
   svg {
-    font-size: 18px;
+    font-size: 22px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   }
 `;
 
