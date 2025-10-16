@@ -34,14 +34,27 @@ A Spotify-like music streaming web application built with the MERN stack, powere
 
 ## Deployment
 
-### Frontend (GitHub Pages)
-The frontend is deployed on GitHub Pages:
+### Frontend (GitHub Pages) ✅
+The frontend is successfully deployed on GitHub Pages:
+
+**Live URL**: [https://pranayy1.github.io/Muse](https://pranayy1.github.io/Muse)
+
+To redeploy after making changes:
 ```bash
 cd client
+npm run build
 npm run deploy
 ```
 
-### Backend
+The deployment uses the `gh-pages` npm package to automatically build and deploy the React app to the `gh-pages` branch.
+
+### Backend (Local Development)
+For local development, the backend runs on port 5000:
+```bash
+npm start
+```
+
+### Backend (Production Deployment)
 For production, deploy the backend to a cloud service:
 - **Render**: [https://render.com](https://render.com)
 - **Heroku**: [https://heroku.com](https://heroku.com)
