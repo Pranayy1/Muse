@@ -1,52 +1,36 @@
 ﻿import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaPlay, FaHeart, FaMusic } from 'react-icons/fa';
+import { FaPlay, FaHeart } from 'react-icons/fa';
 import { useMusic } from '../services/MusicContext';
 import { getTrendingSongs } from '../services/api';
 
-const HomeContainer = styled.div
+const HomeContainer = styled.div`
   width: 100%;
-;
+`;
 
-const WelcomeSection = styled.div
+const WelcomeSection = styled.div`
   margin-bottom: 50px;
   text-align: center;
   padding: 40px 20px;
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(56, 189, 248, 0.2);
   border-radius: 20px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(56, 189, 248, 0.1);
+  backdrop-filter: blur(10px);
 
   @media (max-width: 768px) {
     margin-bottom: 30px;
     padding: 30px 15px;
   }
-;
+`;
 
-const WelcomeTitle = styled.h1
+const WelcomeTitle = styled.h1`
   font-size: 48px;
   font-weight: 700;
   margin-bottom: 15px;
-  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: fadeInUp 0.6s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-
-  svg {
-    color: #38bdf8;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
 
   @keyframes fadeInUp {
     from {
@@ -66,9 +50,9 @@ const WelcomeTitle = styled.h1
   @media (max-width: 480px) {
     font-size: 28px;
   }
-;
+`;
 
-const WelcomeSubtitle = styled.p
+const WelcomeSubtitle = styled.p`
   font-size: 18px;
   color: #64748b;
   margin-bottom: 10px;
@@ -77,17 +61,17 @@ const WelcomeSubtitle = styled.p
   @media (max-width: 768px) {
     font-size: 16px;
   }
-;
+`;
 
-const Section = styled.div
+const Section = styled.div`
   margin-bottom: 50px;
 
   @media (max-width: 768px) {
     margin-bottom: 35px;
   }
-;
+`;
 
-const SectionTitle = styled.h2
+const SectionTitle = styled.h2`
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 25px;
@@ -110,18 +94,12 @@ const SectionTitle = styled.h2
     font-size: 24px;
     margin-bottom: 20px;
   }
-;
+`;
 
-const Grid = styled.div
+const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 25px;
-  animation: fadeIn 0.6s ease;
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
 
   @media (max-width: 1024px) {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -137,9 +115,9 @@ const Grid = styled.div
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-;
+`;
 
-const Card = styled.div
+const Card = styled.div`
   background: rgba(255, 255, 255, 0.7);
   border-radius: 16px;
   padding: 20px;
@@ -147,9 +125,7 @@ const Card = styled.div
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   
   &::before {
     content: '';
@@ -158,7 +134,7 @@ const Card = styled.div
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05));
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(30, 215, 96, 0.05));
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -167,7 +143,7 @@ const Card = styled.div
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
-    border-color: rgba(56, 189, 248, 0.4);
+    border-color: rgba(29, 185, 84, 0.3);
 
     &::before {
       opacity: 1;
@@ -178,9 +154,9 @@ const Card = styled.div
     padding: 15px;
     border-radius: 12px;
   }
-;
+`;
 
-const CardImage = styled.img
+const CardImage = styled.img`
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
@@ -192,9 +168,9 @@ const CardImage = styled.img
     border-radius: 8px;
     margin-bottom: 12px;
   }
-;
+`;
 
-const CardTitle = styled.h3
+const CardTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -206,40 +182,36 @@ const CardTitle = styled.h3
   text-overflow: ellipsis;
   line-height: 1.4;
   min-height: 44px;
-  position: relative;
-  z-index: 1;
 
   @media (max-width: 768px) {
     font-size: 14px;
     min-height: 40px;
   }
-;
+`;
 
-const CardSubtitle = styled.p
+const CardSubtitle = styled.p`
   font-size: 14px;
   color: #64748b;
   margin-bottom: 15px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: relative;
-  z-index: 1;
 
   @media (max-width: 768px) {
     font-size: 12px;
     margin-bottom: 12px;
   }
-;
+`;
 
-const CardActions = styled.div
+const CardActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   z-index: 1;
-;
+`;
 
-const PlayButton = styled.button
+const PlayButton = styled.button`
   width: 45px;
   height: 45px;
   background: linear-gradient(135deg, #38bdf8, #0284c7);
@@ -247,14 +219,14 @@ const PlayButton = styled.button
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #1e293b;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
   
   &:hover {
-    background: linear-gradient(135deg, #0284c7, #0369a1);
+    background: linear-gradient(135deg, #0284c7, #1fdf64);
     transform: scale(1.15);
-    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6);
   }
   
   svg {
@@ -270,33 +242,31 @@ const PlayButton = styled.button
       font-size: 16px;
     }
   }
-;
+`;
 
-const ActionButtons = styled.div
+const ActionButtons = styled.div`
   display: flex;
   gap: 10px;
 
   @media (max-width: 768px) {
     gap: 8px;
   }
-;
+`;
 
-const ActionButtonSmall = styled.button
+const ActionButtonSmall = styled.button`
   width: 32px;
   height: 32px;
-  background: rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0284c7;
+  color: #1e293b;
   transition: all 0.3s ease;
-  border: 1px solid rgba(56, 189, 248, 0.2);
   
   &:hover {
-    background: rgba(56, 189, 248, 0.2);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
-    border-color: rgba(56, 189, 248, 0.4);
   }
   
   svg {
@@ -311,9 +281,9 @@ const ActionButtonSmall = styled.button
       font-size: 12px;
     }
   }
-;
+`;
 
-const LoadingSpinner = styled.div
+const LoadingSpinner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -331,23 +301,22 @@ const LoadingSpinner = styled.div
     height: 200px;
     font-size: 16px;
   }
-;
+`;
 
-const ErrorMessage = styled.div
+const ErrorMessage = styled.div`
   text-align: center;
   padding: 60px 20px;
-  color: #ef4444;
+  color: #ff6b6b;
   font-size: 18px;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(255, 107, 107, 0.1);
   border-radius: 16px;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 107, 107, 0.3);
 
   @media (max-width: 768px) {
     padding: 40px 15px;
     font-size: 16px;
   }
-;
+`;
 
 const Home = () => {
   const { playTrack } = useMusic();
@@ -379,7 +348,7 @@ const Home = () => {
   if (loading) {
     return (
       <HomeContainer>
-        <LoadingSpinner> Loading music...</LoadingSpinner>
+        <LoadingSpinner>ðŸŽµ Loading trending songs...</LoadingSpinner>
       </HomeContainer>
     );
   }
@@ -395,17 +364,14 @@ const Home = () => {
   return (
     <HomeContainer>
       <WelcomeSection>
-        <WelcomeTitle>
-          <FaMusic />
-          <span>Welcome to Muse</span>
-        </WelcomeTitle>
+        <WelcomeTitle>ðŸŽµ Welcome to Muse</WelcomeTitle>
         <WelcomeSubtitle>
-          Your personal music streaming experience 
+          Discover and enjoy millions of songs powered by YouTube
         </WelcomeSubtitle>
       </WelcomeSection>
 
       <Section>
-        <SectionTitle> Trending Now</SectionTitle>
+        <SectionTitle>ðŸ”¥ Trending Now</SectionTitle>
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>
@@ -420,7 +386,9 @@ const Home = () => {
                   <FaPlay />
                 </PlayButton>
                 <ActionButtons>
-                  <ActionButtonSmall onClick={(e) => e.stopPropagation()}>
+                  <ActionButtonSmall onClick={(e) => {
+                    e.stopPropagation();
+                  }}>
                     <FaHeart />
                   </ActionButtonSmall>
                 </ActionButtons>
@@ -434,3 +402,4 @@ const Home = () => {
 };
 
 export default Home;
+

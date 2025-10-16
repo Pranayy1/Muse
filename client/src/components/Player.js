@@ -23,7 +23,7 @@ const PlayerContainer = styled.div`
   justify-content: space-between;
   gap: 20px;
   z-index: 1000;
-  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -4px 30px rgba(56, 189, 248, 0.2);
   border-top: 1px solid rgba(56, 189, 248, 0.3);
 
   @media (max-width: 768px) {
@@ -221,7 +221,7 @@ const ProgressSection = styled.div`
 
 const TimeDisplay = styled.span`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
   min-width: 42px;
   text-align: center;
 
