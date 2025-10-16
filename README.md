@@ -1,12 +1,14 @@
-# Spotify Clone - MERN Stack Music Streaming App
+# Muse - YouTube Music Streaming App
 
 A Spotify-like music streaming web application built with the MERN stack, powered by YouTube Data API v3.
+
+🌐 **Live Demo**: [https://pranayy1.github.io/Muse](https://pranayy1.github.io/Muse)
 
 ## Features
 
 - 🎵 **Music Search**: Search for songs, artists, and albums using YouTube Data API
 - 🔥 **Trending Songs**: View trending music videos in the Indian region
-- ▶️ **Audio Player**: Play, pause, skip, and control music playback
+- ▶️ **Audio Player**: Play, pause, skip, and control music playback with YouTube embed
 - 🎨 **Modern UI**: Beautiful, responsive design inspired by Spotify
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
 - 🎯 **Real-time Controls**: Forward/backward buttons, volume control, and progress bar
@@ -28,6 +30,23 @@ A Spotify-like music streaming web application built with the MERN stack, powere
 - **Styled Components** - CSS-in-JS styling
 - **React Icons** - Icon library
 - **Axios** - HTTP client
+- **YouTube IFrame Player** - Audio playback
+
+## Deployment
+
+### Frontend (GitHub Pages)
+The frontend is deployed on GitHub Pages:
+```bash
+cd client
+npm run deploy
+```
+
+### Backend
+For production, deploy the backend to a cloud service:
+- **Render**: [https://render.com](https://render.com)
+- **Heroku**: [https://heroku.com](https://heroku.com)
+- **Railway**: [https://railway.app](https://railway.app)
+- **Vercel**: [https://vercel.com](https://vercel.com)
 
 ## Installation
 
