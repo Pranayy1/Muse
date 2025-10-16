@@ -10,6 +10,14 @@ import {
 } from 'react-icons/fa';
 import YouTubePlayer from './YouTubePlayer';
 
+// Utility function to decode HTML entities
+const decodeHTML = (html) => {
+  if (!html) return '';
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+};
+
 const PlayerContainer = styled.div`
   position: fixed;
   bottom: 0;
@@ -446,10 +454,10 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
       />
       
       <TrackInfo>
-        <TrackImage src={track.thumbnail} alt={track.title} />
+        <TrackImage src={track.thumbnail} alt={decodeHTML(track.title)} />
         <TrackDetails>
-          <TrackTitle>{track.title}</TrackTitle>
-          <TrackArtist>{track.channelTitle}</TrackArtist>
+          <TrackTitle>{decodeHTML(track.title)}</TrackTitle>
+          <TrackArtist>{decodeHTML(track.channelTitle)}</TrackArtist>
         </TrackDetails>
       </TrackInfo>
 

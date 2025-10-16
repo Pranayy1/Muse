@@ -4,6 +4,13 @@ import { FaPlay, FaHeart } from 'react-icons/fa';
 import { useMusic } from '../services/MusicContext';
 import { getTrendingSongs } from '../services/api';
 
+// Utility function to decode HTML entities
+const decodeHTML = (html) => {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+};
+
 const HomeContainer = styled.div`
   width: 100%;
 `;
@@ -375,9 +382,9 @@ const Home = () => {
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>
-              <CardImage src={song.thumbnail} alt={song.title} />
-              <CardTitle>{song.title}</CardTitle>
-              <CardSubtitle>{song.channelTitle}</CardSubtitle>
+              <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} />
+              <CardTitle>{decodeHTML(song.title)}</CardTitle>
+              <CardSubtitle>{decodeHTML(song.channelTitle)}</CardSubtitle>
               <CardActions>
                 <PlayButton onClick={(e) => {
                   e.stopPropagation();
