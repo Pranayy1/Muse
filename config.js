@@ -1,5 +1,5 @@
 module.exports = {
-  YOUTUBE_API_KEY: 'AIzaSyAweoatxBo6mI4pUccJ33crj3ZpghZZKog',
-  NODE_ENV: 'development',
-  PORT: 5000
+  YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY || 'AIzaSyAweoatxBo6mI4pUccJ33crj3ZpghZZKog',
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  PORT: process.env.PORT || 5000
 };
