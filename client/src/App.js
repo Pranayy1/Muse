@@ -7,6 +7,7 @@ import Search from './pages/Search';
 import Trending from './pages/Trending';
 import Player from './components/Player';
 import { MusicProvider } from './services/MusicContext';
+import { searchSongs } from './services/api';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -95,41 +96,78 @@ function App() {
     setIsPlaying(false);
   };
 
-  const getRandomTrackFromSameArtist = () => {
-    if (!currentTrack || playlist.length === 0) return null;
+  const getRandomTrackFromSameArtist = async () => {
+    if (!currentTrack) return null;
 
-    // Get current artist/channel
-    const currentArtist = currentTrack.channelTitle || currentTrack.artist;
-    
-    // Filter songs from the same artist
-    const sameArtistTracks = playlist.filter(track => {
-      const trackArtist = track.channelTitle || track.artist;
-      return trackArtist === currentArtist && track.id !== currentTrack.id;
-    });
+    try {
+      // Get current artist/channel
+      const currentArtist = currentTrack.channelTitle || currentTrack.artist;
+      console.log('🔍 Searching for more songs from:', currentArtist);
 
-    // If there are songs from the same artist, pick a random one
-    if (sameArtistTracks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * sameArtistTracks.length);
-      const randomTrack = sameArtistTracks[randomIndex];
-      const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
-      return { track: randomTrack, index: playlistIndex };
+      // Search YouTube for more songs from the same artist
+      const searchQuery = currentArtist + ' songs';
+      const response = await searchSongs(searchQuery, 20);
+      
+      if (response && response.videos && response.videos.length > 0) {
+        // Filter out the current track and get only from same artist
+        const sameArtistTracks = response.videos.filter(track => {
+          const trackArtist = track.channelTitle || track.artist;
+          return trackArtist === currentArtist && track.id !== currentTrack.id;
+        });
+
+        if (sameArtistTracks.length > 0) {
+          // Pick a random track
+          const randomIndex = Math.floor(Math.random() * sameArtistTracks.length);
+          const randomTrack = sameArtistTracks[randomIndex];
+          
+          // Add to playlist if not already there
+          if (!playlist.find(t => t.id === randomTrack.id)) {
+            setPlaylist(prev => [...prev, randomTrack]);
+          }
+          
+          console.log('✅ Found random track from YouTube:', randomTrack.title);
+          return { track: randomTrack, index: playlist.length };
+        }
+      }
+
+      // Fallback: Try from existing playlist
+      const sameArtistInPlaylist = playlist.filter(track => {
+        const trackArtist = track.channelTitle || track.artist;
+        return trackArtist === currentArtist && track.id !== currentTrack.id;
+      });
+
+      if (sameArtistInPlaylist.length > 0) {
+        const randomIndex = Math.floor(Math.random() * sameArtistInPlaylist.length);
+        const randomTrack = sameArtistInPlaylist[randomIndex];
+        const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
+        return { track: randomTrack, index: playlistIndex };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('❌ Error fetching songs from same artist:', error);
+      
+      // Fallback to playlist if API fails
+      const sameArtistInPlaylist = playlist.filter(track => {
+        const trackArtist = track.channelTitle || track.artist;
+        const currentArtist = currentTrack.channelTitle || currentTrack.artist;
+        return trackArtist === currentArtist && track.id !== currentTrack.id;
+      });
+
+      if (sameArtistInPlaylist.length > 0) {
+        const randomIndex = Math.floor(Math.random() * sameArtistInPlaylist.length);
+        const randomTrack = sameArtistInPlaylist[randomIndex];
+        const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
+        return { track: randomTrack, index: playlistIndex };
+      }
+
+      return null;
     }
-
-    // If no other songs from same artist, pick any random song
-    const otherTracks = playlist.filter(track => track.id !== currentTrack.id);
-    if (otherTracks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * otherTracks.length);
-      const randomTrack = otherTracks[randomIndex];
-      const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
-      return { track: randomTrack, index: playlistIndex };
-    }
-
-    return null;
   };
 
-  const nextTrack = () => {
-    // Try to get a random track from the same artist
-    const randomTrack = getRandomTrackFromSameArtist();
+  const nextTrack = async () => {
+    // Try to get a random track from the same artist (from YouTube)
+    const randomTrack = await getRandomTrackFromSameArtist();
     
     if (randomTrack) {
       setCurrentIndex(randomTrack.index);
@@ -145,9 +183,9 @@ function App() {
     }
   };
 
-  const previousTrack = () => {
-    // Try to get a random track from the same artist
-    const randomTrack = getRandomTrackFromSameArtist();
+  const previousTrack = async () => {
+    // Try to get a random track from the same artist (from YouTube)
+    const randomTrack = await getRandomTrackFromSameArtist();
     
     if (randomTrack) {
       setCurrentIndex(randomTrack.index);
