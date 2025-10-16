@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { 
   FaPlay, 
@@ -15,7 +15,7 @@ const PlayerContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   padding: 15px 25px;
   display: flex;
@@ -24,7 +24,7 @@ const PlayerContainer = styled.div`
   gap: 20px;
   z-index: 1000;
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
-  border-top: 1px solid rgba(29, 185, 84, 0.3);
+  border-top: 1px solid rgba(56, 189, 248, 0.3);
 
   @media (max-width: 768px) {
     padding: 12px 15px;
@@ -76,7 +76,7 @@ const TrackDetails = styled.div`
 const TrackTitle = styled.div`
   font-size: 15px;
   font-weight: 600;
-  color: white;
+  color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -93,7 +93,7 @@ const TrackTitle = styled.div`
 
 const TrackArtist = styled.div`
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: #64748b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -148,7 +148,7 @@ const ControlButton = styled.button`
   justify-content: center;
   
   &:hover {
-    color: white;
+    color: #1e293b;
     background: rgba(255, 255, 255, 0.1);
     transform: scale(1.1);
   }
@@ -175,13 +175,13 @@ const ControlButton = styled.button`
 `;
 
 const PlayPauseButton = styled(ControlButton)`
-  background: linear-gradient(135deg, #1db954, #1ed760);
-  color: white;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #1e293b;
   width: 45px;
   height: 45px;
   
   &:hover {
-    background: linear-gradient(135deg, #1ed760, #1fdf64);
+    background: linear-gradient(135deg, #0284c7, #1fdf64);
     transform: scale(1.1);
   }
 
@@ -255,7 +255,7 @@ const ProgressBar = styled.div`
 
 const ProgressFill = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #1db954, #1ed760);
+  background: linear-gradient(90deg, #38bdf8, #0284c7);
   border-radius: 10px;
   width: ${props => props.progress}%;
   transition: width 0.1s linear;
@@ -288,7 +288,7 @@ const VolumeButton = styled.button`
   
   &:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: #1e293b;
   }
   
   svg {
@@ -309,7 +309,7 @@ const VolumeSlider = styled.input`
     appearance: none;
     width: 12px;
     height: 12px;
-    background: #1db954;
+    background: #38bdf8;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -322,7 +322,7 @@ const VolumeSlider = styled.input`
   &::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: #1db954;
+    background: #38bdf8;
     border-radius: 50%;
     cursor: pointer;
     border: none;
@@ -494,3 +494,4 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
 };
 
 export default Player;
+
