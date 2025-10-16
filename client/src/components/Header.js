@@ -296,16 +296,16 @@ const Header = () => {
   };
 
   const navItems = [
-    { path: '/', icon: FaHome, label: '🏠 Home' },
-    { path: '/search', icon: FaSearch, label: '🔎 Search' },
-    { path: '/trending', icon: FaFire, label: '🔥 Trending' },
+    { path: '/', icon: FaHome, label: 'Home' },
+    { path: '/search', icon: FaSearch, label: 'Search' },
+    { path: '/trending', icon: FaFire, label: 'Trending' },
   ];
 
   return (
     <>
       <HeaderContainer>
         <Logo to="/" onClick={closeMenu}>
-          🎵
+          <FaMusic />
           <span>Muse</span>
         </Logo>
 

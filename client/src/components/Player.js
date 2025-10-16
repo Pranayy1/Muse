@@ -144,27 +144,53 @@ const ControlButtons = styled.div`
 `;
 
 const ControlButton = styled.button`
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(2, 132, 199, 0.25));
-  border: 2px solid rgba(56, 189, 248, 0.5);
-  color: #1e293b;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  padding: 10px;
+  padding: 8px;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
   
   &:hover {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(2, 132, 199, 0.4));
-    border-color: rgba(56, 189, 248, 0.8);
-    transform: scale(1.15);
-    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
   }
 
-  &:active {
-    transform: scale(1.05);
+  svg {
+    font-size: 18px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px;
+
+    svg {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px;
+
+    svg {
+      font-size: 14px;
+    }
+  }
+`;
+
+const PlayPauseButton = styled(ControlButton)`
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #1e293b;
+  width: 45px;
+  height: 45px;
+  
+  &:hover {
+    background: linear-gradient(135deg, #0284c7, #1fdf64);
+    transform: scale(1.1);
   }
 
   svg {
@@ -172,60 +198,20 @@ const ControlButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    padding: 8px;
-
-    svg {
-      font-size: 18px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    padding: 7px;
-
-    svg {
-      font-size: 16px;
-    }
-  }
-`;
-
-const PlayPauseButton = styled(ControlButton)`
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  border: 2px solid #0ea5e9;
-  color: white;
-  width: 50px;
-  height: 50px;
-  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
-  
-  &:hover {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    border-color: #0284c7;
-    transform: scale(1.15);
-    box-shadow: 0 6px 30px rgba(56, 189, 248, 0.7);
-  }
-
-  &:active {
-    transform: scale(1.05);
-  }
-
-  svg {
-    font-size: 22px;
-  }
-
-  @media (max-width: 768px) {
-    width: 45px;
-    height: 45px;
-
-    svg {
-      font-size: 20px;
-    }
-  }
-
-  @media (max-width: 480px) {
     width: 40px;
     height: 40px;
 
     svg {
       font-size: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 36px;
+    height: 36px;
+
+    svg {
+      font-size: 16px;
     }
   }
 `;
