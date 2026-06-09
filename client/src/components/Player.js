@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { 
   FaPlay, 
@@ -9,14 +9,7 @@ import {
   FaVolumeMute
 } from 'react-icons/fa';
 import YouTubePlayer from './YouTubePlayer';
-
-// Utility function to decode HTML entities
-const decodeHTML = (html) => {
-  if (!html) return '';
-  const txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
-};
+import { decodeHTML } from '../utils/helpers';
 
 const PlayerContainer = styled.div`
   position: fixed;
@@ -251,7 +244,7 @@ const TimeDisplay = styled.span`
 const ProgressBar = styled.div`
   flex: 1;
   height: 5px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(100, 116, 139, 0.3);
   border-radius: 10px;
   position: relative;
   cursor: pointer;
@@ -360,97 +353,112 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(100);
+  const volumeRef = useRef(100);
   const [isMuted, setIsMuted] = useState(false);
-  const [player, setPlayer] = useState(null);
+  const playerRef = useRef(null);
+  const intervalRef = useRef(null);
+  const hasTriggeredNextRef = useRef(false);
+  const [imageError, setImageError] = useState(false);
 
-  const handlePlayerReady = (event) => {
-    console.log('YouTube Player Ready!');
-    console.log('Track data:', track);
-    console.log('Video ID:', track?.id);
-    console.log('Is Playing:', isPlaying);
-    
-    setPlayer(event.target);
-    const dur = event.target.getDuration();
-    console.log('Video duration:', dur);
-    setDuration(dur);
-    
-    // Start playing if isPlaying is true
-    if (isPlaying) {
-      console.log('Auto-starting playback');
-      event.target.playVideo();
+  useEffect(() => {
+    setImageError(false);
+  }, [track?.id]);
+
+  const clearProgressInterval = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
-  };
+  }, []);
 
-  const handleStateChange = (event) => {
-    const playerState = event.data;
-    console.log('Player state changed:', playerState);
-    const states = {
-      '-1': 'unstarted',
-      '0': 'ended',
-      '1': 'playing',
-      '2': 'paused',
-      '3': 'buffering',
-      '5': 'cued'
+  useEffect(() => {
+    clearProgressInterval();
+
+    if (isPlaying) {
+      intervalRef.current = setInterval(() => {
+        const p = playerRef.current;
+        if (p && typeof p.getCurrentTime === 'function' && typeof p.getDuration === 'function') {
+          const currentTime = p.getCurrentTime();
+          const duration = p.getDuration();
+          setCurrentTime(currentTime);
+          if (duration && duration !== Infinity) {
+            setDuration(duration);
+          }
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearProgressInterval();
     };
-    console.log('State name:', states[playerState]);
-    // YouTube Player States: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (cued)
-    if (playerState === 0) { // ended
+  }, [isPlaying, clearProgressInterval]);
+
+  const handlePlayerReady = useCallback((event) => {
+    hasTriggeredNextRef.current = false;
+    const ytPlayer = event.target;
+    playerRef.current = ytPlayer;
+    const dur = ytPlayer.getDuration();
+    setDuration(dur);
+
+    if (isPlaying) {
+      ytPlayer.playVideo();
+    }
+  }, [isPlaying]);
+
+  const handleStateChange = useCallback((event) => {
+    const playerState = event.data;
+    if (playerState === 0 && !hasTriggeredNextRef.current) {
+      hasTriggeredNextRef.current = true;
+      clearProgressInterval();
       onNext();
     }
-  };
+  }, [onNext, clearProgressInterval]);
 
-  const handleProgress = (currentTime, duration) => {
-    setCurrentTime(currentTime);
-    if (duration && duration !== Infinity) {
-      setDuration(duration);
-    }
-  };
+  const handleError = useCallback((event) => {
+    console.error('YouTube Player error:', event.data);
+    clearProgressInterval();
+    onPause();
+  }, [onPause, clearProgressInterval]);
 
-  useEffect(() => {
-    console.log('Play/Pause effect triggered:', { isPlaying, player: !!player });
-    if (player) {
-      if (isPlaying) {
-        console.log('Calling playVideo()');
-        player.playVideo();
-      } else {
-        console.log('Calling pauseVideo()');
-        player.pauseVideo();
-      }
-    }
-  }, [isPlaying, player]);
-
-  useEffect(() => {
-    if (player) {
-      player.setVolume(isMuted ? 0 : volume);
-    }
-  }, [volume, isMuted, player]);
-
-  const handleProgressClick = (e) => {
-    if (player && duration) {
+  const handleProgressClick = useCallback((e) => {
+    const p = playerRef.current;
+    if (p && duration) {
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const newTime = (clickX / rect.width) * duration;
-      player.seekTo(newTime, true);
+      p.seekTo(newTime, true);
       setCurrentTime(newTime);
     }
-  };
+  }, [duration]);
 
-  const formatTime = (time) => {
+  const formatTime = useCallback((time) => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+  }, []);
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = useCallback((e) => {
     const newVolume = parseInt(e.target.value);
     setVolume(newVolume);
+    volumeRef.current = newVolume;
     setIsMuted(newVolume === 0);
-  };
+  }, []);
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
+  const toggleMute = useCallback(() => {
+    setIsMuted(prev => {
+      if (prev) {
+        const saved = volumeRef.current;
+        setVolume(saved > 0 ? saved : 50);
+      } else {
+        setVolume(v => {
+          volumeRef.current = v;
+          return 0;
+        });
+      }
+      return !prev;
+    });
+  }, []);
 
   if (!track) return null;
 
@@ -461,12 +469,16 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
         isPlaying={isPlaying}
         onReady={handlePlayerReady}
         onStateChange={handleStateChange}
-        onProgress={handleProgress}
-        volume={isMuted ? 0 : volume}
+        onError={handleError}
+        volume={volume}
       />
       
       <TrackInfo>
-        <TrackImage src={track.thumbnail} alt={decodeHTML(track.title)} />
+        <TrackImage
+          src={imageError ? undefined : track.thumbnail}
+          alt={decodeHTML(track.title)}
+          onError={() => setImageError(true)}
+        />
         <TrackDetails>
           <TrackTitle>{decodeHTML(track.title)}</TrackTitle>
           <TrackArtist>{decodeHTML(track.channelTitle)}</TrackArtist>
@@ -475,15 +487,15 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
 
       <PlayerControls>
         <ControlButtons>
-          <ControlButton onClick={onPrevious}>
+          <ControlButton onClick={onPrevious} aria-label="Previous track">
             <FaStepBackward />
           </ControlButton>
           
-          <PlayPauseButton onClick={isPlaying ? onPause : onPlay}>
+          <PlayPauseButton onClick={isPlaying ? onPause : onPlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
             {isPlaying ? <FaPause /> : <FaPlay />}
           </PlayPauseButton>
           
-          <ControlButton onClick={onNext}>
+          <ControlButton onClick={onNext} aria-label="Next track">
             <FaStepForward />
           </ControlButton>
         </ControlButtons>
@@ -491,22 +503,23 @@ const Player = ({ track, isPlaying, onPlay, onPause, onNext, onPrevious }) => {
         <ProgressSection>
           <TimeDisplay>{formatTime(currentTime)}</TimeDisplay>
           <ProgressBar onClick={handleProgressClick}>
-            <ProgressFill progress={(currentTime / duration) * 100 || 0} />
+            <ProgressFill progress={duration > 0 ? (currentTime / duration) * 100 : 0} />
           </ProgressBar>
           <TimeDisplay>{formatTime(duration)}</TimeDisplay>
         </ProgressSection>
       </PlayerControls>
 
       <VolumeSection>
-        <VolumeButton onClick={toggleMute}>
+        <VolumeButton onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
           {isMuted || volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />}
         </VolumeButton>
         <VolumeSlider
           type="range"
           min="0"
           max="100"
-          value={isMuted ? 0 : volume}
+          value={volume}
           onChange={handleVolumeChange}
+          aria-label="Volume"
         />
       </VolumeSection>
     </PlayerContainer>

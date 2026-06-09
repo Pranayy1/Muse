@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from './components/Header';
@@ -67,145 +67,129 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playlist, setPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const isMountedRef = useRef(true);
+  const currentIndexRef = useRef(0);
 
-  const playTrack = (track, trackList = []) => {
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const playTrack = useCallback((track, trackList = []) => {
     setCurrentTrack(track);
     setIsPlaying(true);
-    
-    // If a track list is provided, set up the playlist
+
     if (trackList.length > 0) {
-      setPlaylist(trackList);
       const index = trackList.findIndex(t => t.id === track.id);
-      setCurrentIndex(index >= 0 ? index : 0);
-    } else if (playlist.length === 0) {
-      // If no track list and no existing playlist, add this track as the only one
-      setPlaylist([track]);
-      setCurrentIndex(0);
+      const newIndex = index >= 0 ? index : 0;
+      setCurrentIndex(newIndex);
+      currentIndexRef.current = newIndex;
+      setPlaylist(trackList);
     } else {
-      // Find the track in the existing playlist
-      const index = playlist.findIndex(t => t.id === track.id);
-      setCurrentIndex(index >= 0 ? index : 0);
+      setPlaylist(prev => {
+        const existingIndex = prev.findIndex(t => t.id === track.id);
+        if (existingIndex >= 0) {
+          setCurrentIndex(existingIndex);
+          currentIndexRef.current = existingIndex;
+          return prev;
+        }
+        const newIndex = prev.length;
+        setCurrentIndex(newIndex);
+        currentIndexRef.current = newIndex;
+        return [...prev, track];
+      });
     }
-  };
+  }, []);
 
-  const resumePlayback = () => {
+  const resumePlayback = useCallback(() => {
     setIsPlaying(true);
-  };
+  }, []);
 
-  const pauseTrack = () => {
+  const pauseTrack = useCallback(() => {
     setIsPlaying(false);
-  };
+  }, []);
 
-  const getRandomTrackFromSameArtist = async () => {
+  const getRandomTrackFromSameArtist = useCallback(async () => {
     if (!currentTrack) return null;
 
     try {
-      // Get current artist/channel
-      const currentArtist = currentTrack.channelTitle || currentTrack.artist;
-      console.log('🔍 Searching for more songs from:', currentArtist);
-
-      // Search YouTube for more songs from the same artist
+      const currentArtist = currentTrack.channelTitle;
       const searchQuery = currentArtist + ' songs';
       const response = await searchSongs(searchQuery, 20);
-      
+
       if (response && response.videos && response.videos.length > 0) {
-        // Filter out the current track and get only from same artist
         const sameArtistTracks = response.videos.filter(track => {
-          const trackArtist = track.channelTitle || track.artist;
+          const trackArtist = track.channelTitle;
           return trackArtist === currentArtist && track.id !== currentTrack.id;
         });
 
         if (sameArtistTracks.length > 0) {
-          // Pick a random track
           const randomIndex = Math.floor(Math.random() * sameArtistTracks.length);
-          const randomTrack = sameArtistTracks[randomIndex];
-          
-          // Add to playlist if not already there
-          if (!playlist.find(t => t.id === randomTrack.id)) {
-            setPlaylist(prev => [...prev, randomTrack]);
-          }
-          
-          console.log('✅ Found random track from YouTube:', randomTrack.title);
-          return { track: randomTrack, index: playlist.length };
+          return sameArtistTracks[randomIndex];
         }
-      }
-
-      // Fallback: Try from existing playlist
-      const sameArtistInPlaylist = playlist.filter(track => {
-        const trackArtist = track.channelTitle || track.artist;
-        return trackArtist === currentArtist && track.id !== currentTrack.id;
-      });
-
-      if (sameArtistInPlaylist.length > 0) {
-        const randomIndex = Math.floor(Math.random() * sameArtistInPlaylist.length);
-        const randomTrack = sameArtistInPlaylist[randomIndex];
-        const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
-        return { track: randomTrack, index: playlistIndex };
       }
 
       return null;
     } catch (error) {
-      console.error('❌ Error fetching songs from same artist:', error);
-      
-      // Fallback to playlist if API fails
-      const sameArtistInPlaylist = playlist.filter(track => {
-        const trackArtist = track.channelTitle || track.artist;
-        const currentArtist = currentTrack.channelTitle || currentTrack.artist;
-        return trackArtist === currentArtist && track.id !== currentTrack.id;
-      });
-
-      if (sameArtistInPlaylist.length > 0) {
-        const randomIndex = Math.floor(Math.random() * sameArtistInPlaylist.length);
-        const randomTrack = sameArtistInPlaylist[randomIndex];
-        const playlistIndex = playlist.findIndex(t => t.id === randomTrack.id);
-        return { track: randomTrack, index: playlistIndex };
-      }
-
       return null;
     }
-  };
+  }, [currentTrack]);
 
-  const nextTrack = async () => {
-    // Try to get a random track from the same artist (from YouTube)
+  const nextTrack = useCallback(async () => {
+    if (!isMountedRef.current) return;
+
     const randomTrack = await getRandomTrackFromSameArtist();
-    
+
+    if (!isMountedRef.current) return;
+
     if (randomTrack) {
-      setCurrentIndex(randomTrack.index);
-      setCurrentTrack(randomTrack.track);
-      setIsPlaying(true);
-      console.log('🎲 Playing random track from same artist:', randomTrack.track.title);
-    } else if (currentIndex < playlist.length - 1) {
-      // Fallback to sequential if no random track found
-      const nextIndex = currentIndex + 1;
-      setCurrentIndex(nextIndex);
-      setCurrentTrack(playlist[nextIndex]);
+      setPlaylist(prev => {
+        const existingIndex = prev.findIndex(t => t.id === randomTrack.id);
+        if (existingIndex >= 0) {
+          setCurrentIndex(existingIndex);
+          currentIndexRef.current = existingIndex;
+          setCurrentTrack(randomTrack);
+          setIsPlaying(true);
+          return prev;
+        }
+        const newIndex = prev.length;
+        setCurrentIndex(newIndex);
+        currentIndexRef.current = newIndex;
+        setCurrentTrack(randomTrack);
+        setIsPlaying(true);
+        return [...prev, randomTrack];
+      });
+    } else {
+      const idx = currentIndexRef.current;
+      if (idx < playlist.length - 1) {
+        const newIndex = idx + 1;
+        setCurrentTrack(playlist[newIndex]);
+        setCurrentIndex(newIndex);
+        currentIndexRef.current = newIndex;
+        setIsPlaying(true);
+      }
+    }
+  }, [getRandomTrackFromSameArtist, playlist]);
+
+  const previousTrack = useCallback(() => {
+    if (!isMountedRef.current) return;
+
+    const idx = currentIndexRef.current;
+    if (idx > 0) {
+      const newIndex = idx - 1;
+      setCurrentTrack(playlist[newIndex]);
+      setCurrentIndex(newIndex);
+      currentIndexRef.current = newIndex;
       setIsPlaying(true);
     }
-  };
+  }, [playlist]);
 
-  const previousTrack = async () => {
-    // Try to get a random track from the same artist (from YouTube)
-    const randomTrack = await getRandomTrackFromSameArtist();
-    
-    if (randomTrack) {
-      setCurrentIndex(randomTrack.index);
-      setCurrentTrack(randomTrack.track);
-      setIsPlaying(true);
-      console.log('🎲 Playing random track from same artist:', randomTrack.track.title);
-    } else if (currentIndex > 0) {
-      // Fallback to sequential if no random track found
-      const prevIndex = currentIndex - 1;
-      setCurrentIndex(prevIndex);
-      setCurrentTrack(playlist[prevIndex]);
-      setIsPlaying(true);
-    }
-  };
-
-  const addToPlaylist = (track) => {
-    setPlaylist(prev => [...prev, track]);
-  };
-
-  const musicContextValue = {
+  const musicContextValue = useMemo(() => ({
     currentTrack,
     isPlaying,
     playlist,
@@ -213,10 +197,8 @@ function App() {
     playTrack,
     pauseTrack,
     nextTrack,
-    previousTrack,
-    addToPlaylist,
-    setPlaylist
-  };
+    previousTrack
+  }), [currentTrack, isPlaying, playlist, currentIndex, playTrack, pauseTrack, nextTrack, previousTrack]);
 
   return (
     <MusicProvider value={musicContextValue}>

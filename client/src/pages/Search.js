@@ -1,15 +1,9 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaSearch, FaPlay, FaHeart } from 'react-icons/fa';
 import { useMusic } from '../services/MusicContext';
 import { searchSongs } from '../services/api';
-
-// Utility function to decode HTML entities
-const decodeHTML = (html) => {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
-};
+import { decodeHTML } from '../utils/helpers';
 
 const SearchContainer = styled.div`
   width: 100%;
@@ -53,9 +47,41 @@ const SearchInputContainer = styled.div`
   }
 `;
 
+const SubmitButton = styled.button`
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  svg {
+    font-size: 18px;
+  }
+`;
+
 const SearchInput = styled.input`
   width: 100%;
-  padding: 18px 25px 18px 60px;
+  padding: 18px 60px 18px 60px;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50px;
@@ -64,18 +90,18 @@ const SearchInput = styled.input`
   transition: all 0.3s ease;
   
   &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: #94a3b8;
   }
   
   &:focus {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.95);
     border-color: #38bdf8;
-    box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.15);
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
     outline: none;
   }
 
   @media (max-width: 768px) {
-    padding: 16px 20px 16px 55px;
+    padding: 16px 55px 16px 55px;
     font-size: 15px;
   }
 `;
@@ -150,7 +176,7 @@ const ResultCard = styled.div`
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.7);
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -158,7 +184,7 @@ const ResultCard = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(30, 215, 96, 0.05));
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05));
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -166,8 +192,8 @@ const ResultCard = styled.div`
   &:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-    border-color: rgba(29, 185, 84, 0.3);
+    box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.3);
 
     &::before {
       opacity: 1;
@@ -388,10 +414,14 @@ const Search = () => {
       setError(null);
       setHasSearched(true);
       const response = await searchSongs(searchQuery, 20);
-      setSearchResults(response.videos);
+      if (response && response.videos) {
+        setSearchResults(response.videos);
+      } else {
+        setSearchResults([]);
+      }
     } catch (err) {
-      setError('Failed to search songs');
-      console.error('Error searching songs:', err);
+      setError(err.message || 'Failed to search songs');
+      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -404,7 +434,7 @@ const Search = () => {
   return (
     <SearchContainer>
       <SearchHeader>
-        <SearchTitle>🔍Search Music</SearchTitle>
+        <SearchTitle>Search Music</SearchTitle>
         <SearchInputContainer>
           <form onSubmit={handleSearch}>
             <SearchIcon />
@@ -413,13 +443,17 @@ const Search = () => {
               placeholder="Search for songs, artists, albums..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search for songs"
             />
+            <SubmitButton type="submit">
+              <FaSearch />
+            </SubmitButton>
           </form>
         </SearchInputContainer>
       </SearchHeader>
 
       {loading && (
-        <LoadingSpinner>🎵 Searching...</LoadingSpinner>
+        <LoadingSpinner>Searching...</LoadingSpinner>
       )}
 
       {error && !loading && (
@@ -444,18 +478,18 @@ const Search = () => {
           <ResultsGrid>
             {searchResults.map((song) => (
               <ResultCard key={song.id} onClick={() => handlePlayTrack(song)}>
-                <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} />
+                <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} onError={(e) => { e.target.style.display = 'none'; }} />
                 <CardTitle>{decodeHTML(song.title)}</CardTitle>
                 <CardSubtitle>{decodeHTML(song.channelTitle)}</CardSubtitle>
                 <CardActions>
                   <PlayButton onClick={(e) => {
                     e.stopPropagation();
                     handlePlayTrack(song);
-                  }}>
+                  }} aria-label={`Play ${decodeHTML(song.title)}`}>
                     <FaPlay />
                   </PlayButton>
                   <ActionButtons>
-                    <ActionButtonSmall onClick={(e) => e.stopPropagation()}>
+                    <ActionButtonSmall onClick={(e) => e.stopPropagation()} aria-label="Like">
                       <FaHeart />
                     </ActionButtonSmall>
                   </ActionButtons>

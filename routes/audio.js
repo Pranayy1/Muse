@@ -6,13 +6,12 @@ const config = require('../config');
 const YOUTUBE_API_KEY = config.YOUTUBE_API_KEY;
 
 // Get audio stream URL (Note: This is a simplified approach)
-// In a real application, you would need to use youtube-dl or similar tools
+// In a real application, you would need to use yt-dlp or similar tools
 // to extract actual audio URLs, as YouTube doesn't provide direct audio URLs
 router.get('/stream/:videoId', async (req, res) => {
   try {
     const { videoId } = req.params;
 
-    // Get video details first
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         part: 'snippet,contentDetails',
@@ -21,22 +20,20 @@ router.get('/stream/:videoId', async (req, res) => {
       }
     });
 
-    if (response.data.items.length === 0) {
+    if (!response.data.items || response.data.items.length === 0) {
       return res.status(404).json({ error: 'Video not found' });
     }
 
     const video = response.data.items[0];
-    
-    // For demo purposes, we'll return the video embed URL
-    // In a real app, you'd need to use youtube-dl or similar to get actual audio stream
+
     const audioData = {
       videoId: videoId,
-      title: video.snippet.title,
+      title: video.snippet?.title || '',
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
-      duration: video.contentDetails.duration,
-      thumbnail: video.snippet.thumbnails.medium.url,
-      channelTitle: video.snippet.channelTitle
+      duration: video.contentDetails?.duration,
+      thumbnail: video.snippet?.thumbnails?.medium?.url || video.snippet?.thumbnails?.default?.url || '',
+      channelTitle: video.snippet?.channelTitle || ''
     };
 
     res.json({ audio: audioData });
@@ -59,21 +56,21 @@ router.get('/info/:videoId', async (req, res) => {
       }
     });
 
-    if (response.data.items.length === 0) {
+    if (!response.data.items || response.data.items.length === 0) {
       return res.status(404).json({ error: 'Video not found' });
     }
 
     const video = response.data.items[0];
     const videoInfo = {
       id: video.id,
-      title: video.snippet.title,
-      description: video.snippet.description,
-      thumbnail: video.snippet.thumbnails.medium.url,
-      channelTitle: video.snippet.channelTitle,
-      duration: video.contentDetails.duration,
-      viewCount: video.statistics.viewCount,
-      likeCount: video.statistics.likeCount,
-      publishedAt: video.snippet.publishedAt,
+      title: video.snippet?.title || '',
+      description: video.snippet?.description || '',
+      thumbnail: video.snippet?.thumbnails?.medium?.url || video.snippet?.thumbnails?.default?.url || '',
+      channelTitle: video.snippet?.channelTitle || '',
+      duration: video.contentDetails?.duration,
+      viewCount: video.statistics?.viewCount,
+      likeCount: video.statistics?.likeCount,
+      publishedAt: video.snippet?.publishedAt,
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       watchUrl: `https://www.youtube.com/watch?v=${videoId}`
     };

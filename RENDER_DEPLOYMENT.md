@@ -39,8 +39,8 @@ In the "Environment Variables" section, add:
    - **Key**: `NODE_ENV`
      **Value**: `production`
    
-   - **Key**: `YOUTUBE_API_KEY`
-     **Value**: `AIzaSyAweoatxBo6mI4pUccJ33crj3ZpghZZKog`
+    - **Key**: `YOUTUBE_API_KEY`
+      **Value**: `your_youtube_api_key_here` (get from Google Cloud Console)
 
 ## Step 5: Deploy
 1. Click "Create Web Service" at the bottom

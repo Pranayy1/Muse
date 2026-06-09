@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaHome, FaSearch, FaFire, FaBars, FaTimes, FaMusic } from 'react-icons/fa';
+import { FaHome, FaSearch, FaFire, FaBars, FaTimes, FaMusic, FaExternalLinkAlt } from 'react-icons/fa';
 
 const HeaderContainer = styled.header`
   background: rgba(255, 255, 255, 0.85);
@@ -83,12 +83,12 @@ const NavLink = styled(Link)`
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  color: ${props => props.active ? '#0284c7' : '#64748b'};
+  color: ${props => props.$active ? '#0284c7' : '#64748b'};
   text-decoration: none;
-  font-weight: ${props => props.active ? '600' : '500'};
+  font-weight: ${props => props.$active ? '600' : '500'};
   font-size: 15px;
   border-radius: 25px;
-  background: ${props => props.active ? 'rgba(56, 189, 248, 0.15)' : 'transparent'};
+  background: ${props => props.$active ? 'rgba(56, 189, 248, 0.15)' : 'transparent'};
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -119,6 +119,47 @@ const NavLink = styled(Link)`
   }
 `;
 
+const ExternalLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 25px;
+  background: transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(56, 189, 248, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: #0284c7;
+    background: rgba(56, 189, 248, 0.1);
+
+    &::before {
+      transform: translateX(0);
+    }
+  }
+
+  svg {
+    font-size: 14px;
+  }
+`;
+
 const MenuButton = styled.button`
   display: none;
   font-size: 24px;
@@ -140,10 +181,13 @@ const MenuButton = styled.button`
 `;
 
 const MobileNav = styled.div`
-  display: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
-    display: ${props => props.isOpen ? 'block' : 'none'};
+    display: block;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -157,17 +201,11 @@ const MobileNav = styled.div`
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
     box-shadow: 0 -10px 40px rgba(56, 189, 248, 0.2);
-    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
 
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
+    &.open {
+      visibility: visible;
       opacity: 1;
+      transform: translateY(0);
     }
   }
 `;
@@ -221,19 +259,16 @@ const MobileNavGrid = styled.div`
   gap: 15px;
 `;
 
-const MobileNavLink = styled(Link)`
+const MobileExternalLink = styled.a`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   padding: 20px 15px;
   border-radius: 16px;
-  background: ${props => props.active 
-    ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.15))'
-    : 'rgba(241, 245, 249, 0.5)'};
-  border: 1px solid ${props => props.active ? 'rgba(56, 189, 248, 0.4)' : 'transparent'};
-  box-shadow: ${props => props.active ? '0 4px 15px rgba(56, 189, 248, 0.2)' : 'none'};
-  color: ${props => props.active ? '#0284c7' : '#64748b'};
+  background: rgba(241, 245, 249, 0.5);
+  border: 1px solid transparent;
+  color: #64748b;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -249,7 +284,45 @@ const MobileNavLink = styled(Link)`
   }
 
   &:hover {
-    background: ${props => props.active 
+    background: rgba(56, 189, 248, 0.1);
+    color: #0284c7;
+    transform: translateY(-2px);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const MobileNavLink = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 15px;
+  border-radius: 16px;
+  background: ${props => props.$active
+    ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.15))'
+    : 'rgba(241, 245, 249, 0.5)'};
+  border: 1px solid ${props => props.$active ? 'rgba(56, 189, 248, 0.4)' : 'transparent'};
+  box-shadow: ${props => props.$active ? '0 4px 15px rgba(56, 189, 248, 0.2)' : 'none'};
+  color: ${props => props.$active ? '#0284c7' : '#64748b'};
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  svg {
+    font-size: 24px;
+    transition: transform 0.3s ease;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:hover {
+    background: ${props => props.$active
       ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.2))'
       : 'rgba(56, 189, 248, 0.1)'};
     color: #0284c7;
@@ -262,10 +335,12 @@ const MobileNavLink = styled(Link)`
 `;
 
 const Overlay = styled.div`
-  display: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 
   @media (max-width: 768px) {
-    display: ${props => props.isOpen ? 'block' : 'none'};
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -274,12 +349,11 @@ const Overlay = styled.div`
     background: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(4px);
     z-index: 1000;
-    animation: fadeIn 0.3s ease;
-  }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    &.open {
+      visibility: visible;
+      opacity: 1;
+    }
   }
 `;
 
@@ -314,26 +388,30 @@ const Header = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              active={location.pathname === item.path ? 'true' : undefined}
+              $active={location.pathname === item.path}
             >
               <item.icon />
               <span>{item.label}</span>
             </NavLink>
           ))}
+          <ExternalLink href="https://pranayy1.github.io/homepage(Studyplay)/">
+            <FaExternalLinkAlt />
+            <span>StudyPlay</span>
+          </ExternalLink>
         </Nav>
 
-        <MenuButton onClick={toggleMenu}>
+        <MenuButton onClick={toggleMenu} type="button" aria-label="Toggle menu" aria-expanded={mobileMenuOpen}>
           {mobileMenuOpen ? <FaTimes /> : <FaBars />}
         </MenuButton>
       </HeaderContainer>
 
-      <MobileNav isOpen={mobileMenuOpen}>
+      <MobileNav className={mobileMenuOpen ? 'open' : ''}>
         <MobileNavHeader>
           <MobileNavTitle>
             <FaMusic />
             <span>Menu</span>
           </MobileNavTitle>
-          <CloseButton onClick={closeMenu}>
+          <CloseButton onClick={closeMenu} type="button" aria-label="Close menu">
             <FaTimes />
           </CloseButton>
         </MobileNavHeader>
@@ -343,17 +421,21 @@ const Header = () => {
             <MobileNavLink
               key={item.path}
               to={item.path}
-              active={location.pathname === item.path ? 'true' : undefined}
+              $active={location.pathname === item.path}
               onClick={closeMenu}
             >
               <item.icon />
               <span>{item.label}</span>
             </MobileNavLink>
           ))}
+          <MobileExternalLink href="https://pranayy1.github.io/homepage(Studyplay)/" onClick={closeMenu}>
+            <FaExternalLinkAlt />
+            <span>StudyPlay</span>
+          </MobileExternalLink>
         </MobileNavGrid>
       </MobileNav>
 
-      <Overlay isOpen={mobileMenuOpen} onClick={closeMenu} />
+      <Overlay className={mobileMenuOpen ? 'open' : ''} onClick={closeMenu} />
     </>
   );
 };

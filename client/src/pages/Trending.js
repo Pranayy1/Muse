@@ -1,15 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaPlay, FaHeart, FaFire } from 'react-icons/fa';
 import { useMusic } from '../services/MusicContext';
 import { getTrendingSongs } from '../services/api';
-
-// Utility function to decode HTML entities
-const decodeHTML = (html) => {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
-};
+import { decodeHTML } from '../utils/helpers';
 
 const TrendingContainer = styled.div`
   width: 100%;
@@ -33,14 +27,17 @@ const PageTitle = styled.h1`
   font-size: 48px;
   font-weight: 700;
   margin-bottom: 15px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
+
+  .title-text {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
   svg {
     color: #ff6b6b;
@@ -134,7 +131,7 @@ const Card = styled.div`
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.7);
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -150,7 +147,7 @@ const Card = styled.div`
   &:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 30px rgba(255, 107, 107, 0.3);
     border-color: rgba(255, 107, 107, 0.3);
 
     &::before {
@@ -334,18 +331,34 @@ const Trending = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchTrendingSongs = async () => {
       try {
         setLoading(true);
         const response = await getTrendingSongs(20);
-        setTrendingSongs(response.videos);
+        if (isMountedRef.current) {
+          if (response && response.videos) {
+            setTrendingSongs(response.videos);
+          } else {
+            setError('Failed to load trending songs');
+          }
+        }
       } catch (err) {
-        setError('Failed to load trending songs');
-        console.error('Error fetching trending songs:', err);
+        if (isMountedRef.current) {
+          setError(err.message || 'Failed to load trending songs');
+        }
       } finally {
-        setLoading(false);
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
@@ -359,7 +372,7 @@ const Trending = () => {
   if (loading) {
     return (
       <TrendingContainer>
-        <LoadingSpinner>🔥 Loading trending songs...</LoadingSpinner>
+        <LoadingSpinner>Loading trending songs...</LoadingSpinner>
       </TrendingContainer>
     );
   }
@@ -377,7 +390,7 @@ const Trending = () => {
       <PageHeader>
         <PageTitle>
           <FaFire />
-          <span>Trending Now</span>
+          <span className="title-text">Trending Now</span>
         </PageTitle>
         <PageSubtitle>
           The hottest tracks everyone's listening to right now
@@ -385,22 +398,22 @@ const Trending = () => {
       </PageHeader>
 
       <Section>
-        <SectionTitle>🎵 Top Trending Songs</SectionTitle>
+        <SectionTitle>Top Trending Songs</SectionTitle>
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>
-              <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} />
+              <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} onError={(e) => { e.target.style.display = 'none'; }} />
               <CardTitle>{decodeHTML(song.title)}</CardTitle>
               <CardSubtitle>{decodeHTML(song.channelTitle)}</CardSubtitle>
               <CardActions>
                 <PlayButton onClick={(e) => {
                   e.stopPropagation();
                   handlePlayTrack(song);
-                }}>
+                }} aria-label={`Play ${decodeHTML(song.title)}`}>
                   <FaPlay />
                 </PlayButton>
                 <ActionButtons>
-                  <ActionButtonSmall onClick={(e) => e.stopPropagation()}>
+                  <ActionButtonSmall onClick={(e) => e.stopPropagation()} aria-label="Like">
                     <FaHeart />
                   </ActionButtonSmall>
                 </ActionButtons>

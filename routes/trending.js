@@ -8,29 +8,34 @@ const YOUTUBE_API_KEY = config.YOUTUBE_API_KEY;
 // Get trending music videos in India
 router.get('/', async (req, res) => {
   try {
-    const { maxResults = 20 } = req.query;
+    const rawMax = parseInt(req.query.maxResults);
+    const maxResults = Math.min(Math.max(Number.isNaN(rawMax) ? 20 : rawMax, 1), 50);
 
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         part: 'snippet,contentDetails,statistics',
         chart: 'mostPopular',
-        regionCode: 'IN', // India
-        videoCategoryId: '10', // Music category
+        regionCode: 'IN',
+        videoCategoryId: '10',
         maxResults: maxResults,
         key: YOUTUBE_API_KEY
       }
     });
 
+    if (!response.data.items) {
+      return res.json({ videos: [] });
+    }
+
     const videos = response.data.items.map(item => ({
       id: item.id,
-      title: item.snippet.title,
-      description: item.snippet.description,
-      thumbnail: item.snippet.thumbnails.medium.url,
-      channelTitle: item.snippet.channelTitle,
-      duration: item.contentDetails.duration,
-      viewCount: item.statistics.viewCount,
-      likeCount: item.statistics.likeCount,
-      publishedAt: item.snippet.publishedAt
+      title: item.snippet?.title || '',
+      description: item.snippet?.description || '',
+      thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '',
+      channelTitle: item.snippet?.channelTitle || '',
+      duration: item.contentDetails?.duration,
+      viewCount: item.statistics?.viewCount,
+      likeCount: item.statistics?.likeCount,
+      publishedAt: item.snippet?.publishedAt
     }));
 
     res.json({ videos });
@@ -44,7 +49,12 @@ router.get('/', async (req, res) => {
 router.get('/category/:categoryId', async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const { maxResults = 20 } = req.query;
+    const rawMax = parseInt(req.query.maxResults);
+    const maxResults = Math.min(Math.max(Number.isNaN(rawMax) ? 20 : rawMax, 1), 50);
+
+    if (!/^\d+$/.test(categoryId)) {
+      return res.status(400).json({ error: 'Invalid category ID' });
+    }
 
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
@@ -57,16 +67,20 @@ router.get('/category/:categoryId', async (req, res) => {
       }
     });
 
+    if (!response.data.items) {
+      return res.json({ videos: [] });
+    }
+
     const videos = response.data.items.map(item => ({
       id: item.id,
-      title: item.snippet.title,
-      description: item.snippet.description,
-      thumbnail: item.snippet.thumbnails.medium.url,
-      channelTitle: item.snippet.channelTitle,
-      duration: item.contentDetails.duration,
-      viewCount: item.statistics.viewCount,
-      likeCount: item.statistics.likeCount,
-      publishedAt: item.snippet.publishedAt
+      title: item.snippet?.title || '',
+      description: item.snippet?.description || '',
+      thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '',
+      channelTitle: item.snippet?.channelTitle || '',
+      duration: item.contentDetails?.duration,
+      viewCount: item.statistics?.viewCount,
+      likeCount: item.statistics?.likeCount,
+      publishedAt: item.snippet?.publishedAt
     }));
 
     res.json({ videos });

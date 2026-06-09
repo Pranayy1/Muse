@@ -8,8 +8,10 @@ const YOUTUBE_API_KEY = config.YOUTUBE_API_KEY;
 // Search for songs
 router.get('/', async (req, res) => {
   try {
-    const { q, maxResults = 10 } = req.query;
-    
+    const { q } = req.query;
+    const rawMax = parseInt(req.query.maxResults);
+    const maxResults = Math.min(Math.max(Number.isNaN(rawMax) ? 10 : rawMax, 1), 50);
+
     if (!q) {
       return res.status(400).json({ error: 'Search query is required' });
     }
@@ -19,20 +21,24 @@ router.get('/', async (req, res) => {
         part: 'snippet',
         q: q,
         type: 'video',
-        videoCategoryId: '10', // Music category
+        videoCategoryId: '10',
         maxResults: maxResults,
         key: YOUTUBE_API_KEY
       }
     });
 
+    if (!response.data.items) {
+      return res.json({ videos: [] });
+    }
+
     const videos = response.data.items.map(item => ({
-      id: item.id.videoId,
-      title: item.snippet.title,
-      description: item.snippet.description,
-      thumbnail: item.snippet.thumbnails.medium.url,
-      channelTitle: item.snippet.channelTitle,
-      publishedAt: item.snippet.publishedAt
-    }));
+      id: item.id?.videoId,
+      title: item.snippet?.title || '',
+      description: item.snippet?.description || '',
+      thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || '',
+      channelTitle: item.snippet?.channelTitle || '',
+      publishedAt: item.snippet?.publishedAt
+    })).filter(video => video.id);
 
     res.json({ videos });
   } catch (error) {
@@ -54,21 +60,21 @@ router.get('/:videoId', async (req, res) => {
       }
     });
 
-    if (response.data.items.length === 0) {
+    if (!response.data.items || response.data.items.length === 0) {
       return res.status(404).json({ error: 'Video not found' });
     }
 
     const video = response.data.items[0];
     const videoData = {
       id: video.id,
-      title: video.snippet.title,
-      description: video.snippet.description,
-      thumbnail: video.snippet.thumbnails.medium.url,
-      channelTitle: video.snippet.channelTitle,
-      duration: video.contentDetails.duration,
-      viewCount: video.statistics.viewCount,
-      likeCount: video.statistics.likeCount,
-      publishedAt: video.snippet.publishedAt
+      title: video.snippet?.title || '',
+      description: video.snippet?.description || '',
+      thumbnail: video.snippet?.thumbnails?.medium?.url || video.snippet?.thumbnails?.default?.url || '',
+      channelTitle: video.snippet?.channelTitle || '',
+      duration: video.contentDetails?.duration,
+      viewCount: video.statistics?.viewCount,
+      likeCount: video.statistics?.likeCount,
+      publishedAt: video.snippet?.publishedAt
     };
 
     res.json({ video: videoData });

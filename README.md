@@ -64,7 +64,7 @@ For production, deploy the backend to a cloud service:
 ## Installation
 
 ### Prerequisites
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
 - npm or yarn
 - YouTube Data API v3 key
 
@@ -73,7 +73,7 @@ For production, deploy the backend to a cloud service:
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd spotify-clone-mern
+cd Muse
 ```
 
 2. Install backend dependencies:
@@ -134,7 +134,7 @@ npm run dev
 ## Project Structure
 
 ```
-spotify-clone-mern/
+Muse/
 ├── client/                 # React frontend
 │   ├── public/            # Static files
 │   ├── src/
@@ -166,12 +166,10 @@ spotify-clone-mern/
 - Forward/backward navigation
 - Progress bar with click-to-seek
 - Volume control with mute option
-- Shuffle and repeat modes
 - Track information display
 
 ### Search Functionality
-- Real-time search with YouTube Data API
-- Filter results by relevance, date, rating, or view count
+- Search with YouTube Data API
 - Responsive search results grid
 - Click to play functionality
 

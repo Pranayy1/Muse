@@ -1,15 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaPlay, FaHeart } from 'react-icons/fa';
 import { useMusic } from '../services/MusicContext';
 import { getTrendingSongs } from '../services/api';
-
-// Utility function to decode HTML entities
-const decodeHTML = (html) => {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
-};
+import { decodeHTML } from '../utils/helpers';
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -133,7 +127,7 @@ const Card = styled.div`
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.7);
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -141,7 +135,7 @@ const Card = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(30, 215, 96, 0.05));
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05));
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -150,7 +144,7 @@ const Card = styled.div`
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
-    border-color: rgba(29, 185, 84, 0.3);
+    border-color: rgba(56, 189, 248, 0.3);
 
     &::before {
       opacity: 1;
@@ -333,18 +327,34 @@ const Home = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchTrendingSongs = async () => {
       try {
         setLoading(true);
         const response = await getTrendingSongs(20);
-        setTrendingSongs(response.videos);
+        if (isMountedRef.current) {
+          if (response && response.videos) {
+            setTrendingSongs(response.videos);
+          } else {
+            setError('Failed to load trending songs');
+          }
+        }
       } catch (err) {
-        setError('Failed to load trending songs');
-        console.error('Error fetching trending songs:', err);
+        if (isMountedRef.current) {
+          setError(err.message || 'Failed to load trending songs');
+        }
       } finally {
-        setLoading(false);
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
@@ -374,31 +384,29 @@ const Home = () => {
   return (
     <HomeContainer>
       <WelcomeSection>
-        <WelcomeTitle> Welcome to Muse</WelcomeTitle>
+        <WelcomeTitle>Welcome to Muse</WelcomeTitle>
         <WelcomeSubtitle>
           Discover and enjoy millions of songs powered by YouTube
         </WelcomeSubtitle>
       </WelcomeSection>
 
       <Section>
-        <SectionTitle> Trending Now</SectionTitle>
+        <SectionTitle>Trending Now</SectionTitle>
         <Grid>
           {trendingSongs.map((song) => (
             <Card key={song.id} onClick={() => handlePlayTrack(song)}>
-              <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} />
+              <CardImage src={song.thumbnail} alt={decodeHTML(song.title)} onError={(e) => { e.target.style.display = 'none'; }} />
               <CardTitle>{decodeHTML(song.title)}</CardTitle>
               <CardSubtitle>{decodeHTML(song.channelTitle)}</CardSubtitle>
               <CardActions>
                 <PlayButton onClick={(e) => {
                   e.stopPropagation();
                   handlePlayTrack(song);
-                }}>
+                }} aria-label={`Play ${decodeHTML(song.title)}`}>
                   <FaPlay />
                 </PlayButton>
                 <ActionButtons>
-                  <ActionButtonSmall onClick={(e) => {
-                    e.stopPropagation();
-                  }}>
+                  <ActionButtonSmall onClick={(e) => e.stopPropagation()} aria-label="Like">
                     <FaHeart />
                   </ActionButtonSmall>
                 </ActionButtons>

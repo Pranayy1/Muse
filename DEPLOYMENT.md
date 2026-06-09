@@ -95,8 +95,8 @@ npm run deploy
 ```
 
 ### API Configuration (client/src/services/api.js)
-Currently points to: `http://localhost:5000/api`
-**Needs update after backend deployment**
+Currently defaults to: `https://muse-backend-t5ty.onrender.com/api`
+Can be overridden with `REACT_APP_API_URL` environment variable
 
 ---
 
