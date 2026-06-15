@@ -22,7 +22,7 @@ const SearchTitle = styled.h1`
   font-size: 42px;
   font-weight: 700;
   margin-bottom: 30px;
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #818CF8 0%, #6366F1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -52,7 +52,7 @@ const SubmitButton = styled.button`
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  background: linear-gradient(135deg, #818CF8, #6366F1);
   border: none;
   border-radius: 50%;
   width: 44px;
@@ -63,11 +63,11 @@ const SubmitButton = styled.button`
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 
   &:hover {
     transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
   }
 
   &:active {
@@ -95,8 +95,8 @@ const SearchInput = styled.input`
   
   &:focus {
     background: rgba(255, 255, 255, 0.95);
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    border-color: #818CF8;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     outline: none;
   }
 
@@ -184,7 +184,7 @@ const ResultCard = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05));
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(129, 140, 248, 0.04));
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -192,8 +192,8 @@ const ResultCard = styled.div`
   &:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
-    border-color: rgba(56, 189, 248, 0.3);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.2);
 
     &::before {
       opacity: 1;
@@ -264,20 +264,20 @@ const CardActions = styled.div`
 const PlayButton = styled.button`
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  background: linear-gradient(135deg, #818CF8, #6366F1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.9);
   
   &:hover {
-    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    background: linear-gradient(135deg, #A5B4FC, #818CF8);
     transform: scale(1.2);
-    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.7);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
     border-color: white;
   }
   

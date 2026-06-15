@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Trending from './pages/Trending';
@@ -210,7 +211,7 @@ function App() {
       <Router>
         <AppContainer>
           <Header />
-          <MainContent hasPlayer={!!currentTrack}>
+          <MainContent hasPlayer={!!currentTrack} style={{ paddingBottom: !!currentTrack ? '100px' : '0' }}>
             <ContentArea>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -219,6 +220,7 @@ function App() {
               </Routes>
             </ContentArea>
           </MainContent>
+          <Footer />
           {currentTrack && (
             <Player
               track={currentTrack}

@@ -10,11 +10,11 @@ const HeaderContainer = styled.header`
   justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 30px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 4px 30px rgba(99, 102, 241, 0.08);
   animation: slideDown 0.5s ease;
 
   @keyframes slideDown {
@@ -39,18 +39,18 @@ const Logo = styled(Link)`
   gap: 10px;
   font-size: 24px;
   font-weight: bold;
-  color: #0284c7;
+  color: #6366F1;
   text-decoration: none;
   transition: all 0.3s ease;
 
   &:hover {
-    color: #0369a1;
+    color: #4F46E5;
     transform: scale(1.05);
   }
 
   svg {
     font-size: 28px;
-    color: #38bdf8;
+    color: #818CF8;
     animation: pulse 2s ease-in-out infinite;
   }
 
@@ -83,12 +83,12 @@ const NavLink = styled(Link)`
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  color: ${props => props.$active ? '#0284c7' : '#64748b'};
+  color: ${props => props.$active ? '#6366F1' : '#64748b'};
   text-decoration: none;
   font-weight: ${props => props.$active ? '600' : '500'};
   font-size: 15px;
   border-radius: 25px;
-  background: ${props => props.$active ? 'rgba(56, 189, 248, 0.15)' : 'transparent'};
+  background: ${props => props.$active ? 'rgba(99, 102, 241, 0.12)' : 'transparent'};
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -100,14 +100,14 @@ const NavLink = styled(Link)`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(99, 102, 241, 0.08);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
 
   &:hover {
     color: #0284c7;
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(99, 102, 241, 0.08);
 
     &::before {
       transform: translateX(0);
@@ -141,14 +141,14 @@ const ExternalLink = styled.a`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(99, 102, 241, 0.08);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
 
   &:hover {
     color: #0284c7;
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(99, 102, 241, 0.08);
 
     &::before {
       transform: translateX(0);
@@ -171,7 +171,7 @@ const MenuButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    color: #0369a1;
+    color: #4F46E5;
     transform: scale(1.1);
   }
 
@@ -197,10 +197,10 @@ const MobileNav = styled.div`
     padding: 20px;
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
     z-index: 1001;
-    border-top: 2px solid rgba(56, 189, 248, 0.3);
+    border-top: 2px solid rgba(99, 102, 241, 0.2);
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    box-shadow: 0 -10px 40px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 -10px 40px rgba(99, 102, 241, 0.12);
 
     &.open {
       visibility: visible;
@@ -216,7 +216,7 @@ const MobileNavHeader = styled.div`
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
 `;
 
 const MobileNavTitle = styled.div`
@@ -228,7 +228,7 @@ const MobileNavTitle = styled.div`
   gap: 8px;
 
   svg {
-    color: #38bdf8;
+    color: #818CF8;
   }
 `;
 
@@ -236,7 +236,7 @@ const CloseButton = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(56, 189, 248, 0.1);
+  background: rgba(99, 102, 241, 0.08);
   border: none;
   color: #64748b;
   font-size: 20px;
@@ -247,7 +247,7 @@ const CloseButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(56, 189, 248, 0.2);
+    background: rgba(99, 102, 241, 0.12);
     color: #0284c7;
     transform: rotate(90deg);
   }
@@ -284,7 +284,7 @@ const MobileExternalLink = styled.a`
   }
 
   &:hover {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(99, 102, 241, 0.08);
     color: #0284c7;
     transform: translateY(-2px);
 
@@ -302,11 +302,11 @@ const MobileNavLink = styled(Link)`
   padding: 20px 15px;
   border-radius: 16px;
   background: ${props => props.$active
-    ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.15))'
+    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(129, 140, 248, 0.12))'
     : 'rgba(241, 245, 249, 0.5)'};
-  border: 1px solid ${props => props.$active ? 'rgba(56, 189, 248, 0.4)' : 'transparent'};
-  box-shadow: ${props => props.$active ? '0 4px 15px rgba(56, 189, 248, 0.2)' : 'none'};
-  color: ${props => props.$active ? '#0284c7' : '#64748b'};
+  border: 1px solid ${props => props.$active ? 'rgba(99, 102, 241, 0.3)' : 'transparent'};
+  box-shadow: ${props => props.$active ? '0 4px 15px rgba(99, 102, 241, 0.12)' : 'none'};
+  color: ${props => props.$active ? '#6366F1' : '#64748b'};
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -323,8 +323,8 @@ const MobileNavLink = styled(Link)`
 
   &:hover {
     background: ${props => props.$active
-      ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.2))'
-      : 'rgba(56, 189, 248, 0.1)'};
+      ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(129, 140, 248, 0.15))'
+      : 'rgba(99, 102, 241, 0.08)'};
     color: #0284c7;
     transform: translateY(-2px);
 

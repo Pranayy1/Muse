@@ -24,8 +24,8 @@ const PlayerContainer = styled.div`
   justify-content: space-between;
   gap: 20px;
   z-index: 1000;
-  box-shadow: 0 -4px 30px rgba(56, 189, 248, 0.2);
-  border-top: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 -4px 30px rgba(99, 102, 241, 0.15);
+  border-top: 1px solid rgba(99, 102, 241, 0.2);
 
   @media (max-width: 768px) {
     padding: 12px 15px;
@@ -137,7 +137,7 @@ const ControlButtons = styled.div`
 `;
 
 const ControlButton = styled.button`
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(99, 102, 241, 0.15);
   border: 2px solid rgba(56, 189, 248, 0.4);
   color: #1e293b;
   cursor: pointer;
@@ -151,10 +151,10 @@ const ControlButton = styled.button`
   
   &:hover {
     color: white;
-    background: rgba(56, 189, 248, 0.5);
-    border-color: rgba(56, 189, 248, 0.8);
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.6);
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.5);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
   }
 
   svg {
@@ -180,18 +180,18 @@ const ControlButton = styled.button`
 `;
 
 const PlayPauseButton = styled(ControlButton)`
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  background: linear-gradient(135deg, #818CF8, #6366F1);
   border: 2px solid rgba(255, 255, 255, 0.9);
   color: white;
   width: 52px;
   height: 52px;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
   
   &:hover {
-    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    background: linear-gradient(135deg, #A5B4FC, #818CF8);
     border-color: white;
     transform: scale(1.2);
-    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.7);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
   }
 
   svg {
@@ -265,7 +265,7 @@ const ProgressBar = styled.div`
 
 const ProgressFill = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #0284c7);
+  background: linear-gradient(90deg, #818CF8, #6366F1);
   border-radius: 10px;
   width: ${props => props.progress}%;
   transition: width 0.1s linear;
@@ -285,7 +285,7 @@ const VolumeSection = styled.div`
 `;
 
 const VolumeButton = styled.button`
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(99, 102, 241, 0.15);
   border: 2px solid rgba(56, 189, 248, 0.4);
   color: #1e293b;
   cursor: pointer;
@@ -298,11 +298,11 @@ const VolumeButton = styled.button`
   box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
   
   &:hover {
-    background: rgba(56, 189, 248, 0.5);
-    border-color: rgba(56, 189, 248, 0.8);
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.6);
     color: white;
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.5);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
   }
   
   svg {
@@ -324,7 +324,7 @@ const VolumeSlider = styled.input`
     appearance: none;
     width: 12px;
     height: 12px;
-    background: #38bdf8;
+    background: #818CF8;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -337,7 +337,7 @@ const VolumeSlider = styled.input`
   &::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: #38bdf8;
+    background: #818CF8;
     border-radius: 50%;
     cursor: pointer;
     border: none;
