@@ -428,7 +428,7 @@ const Header = () => {
               <span>{item.label}</span>
             </MobileNavLink>
           ))}
-          <MobileExternalLink href="https://pranayy1.github.io/homepage(Studyplay)/" onClick={closeMenu}>
+          <MobileExternalLink href="https://pranayy1.github.io/Studyplay/" onClick={closeMenu}>
             <FaExternalLinkAlt />
             <span>StudyPlay</span>
           </MobileExternalLink>
