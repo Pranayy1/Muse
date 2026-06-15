@@ -394,7 +394,7 @@ const Header = () => {
               <span>{item.label}</span>
             </NavLink>
           ))}
-          <ExternalLink href="https://pranayy1.github.io/homepage(Studyplay)/">
+          <ExternalLink href="https://pranayy1.github.io/Studyplay/">
             <FaExternalLinkAlt />
             <span>StudyPlay</span>
           </ExternalLink>
