@@ -69,10 +69,15 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMountedRef = useRef(true);
   const currentIndexRef = useRef(0);
+  const playlistRef = useRef([]);
 
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
+
+  useEffect(() => {
+    playlistRef.current = playlist;
+  }, [playlist]);
 
   useEffect(() => {
     return () => {
@@ -81,28 +86,27 @@ function App() {
   }, []);
 
   const playTrack = useCallback((track, trackList = []) => {
-    setCurrentTrack(track);
-    setIsPlaying(true);
-
     if (trackList.length > 0) {
       const index = trackList.findIndex(t => t.id === track.id);
       const newIndex = index >= 0 ? index : 0;
       setCurrentIndex(newIndex);
       currentIndexRef.current = newIndex;
       setPlaylist(trackList);
+      setCurrentTrack(track);
+      setIsPlaying(true);
     } else {
-      setPlaylist(prev => {
-        const existingIndex = prev.findIndex(t => t.id === track.id);
-        if (existingIndex >= 0) {
-          setCurrentIndex(existingIndex);
-          currentIndexRef.current = existingIndex;
-          return prev;
-        }
-        const newIndex = prev.length;
-        setCurrentIndex(newIndex);
-        currentIndexRef.current = newIndex;
-        return [...prev, track];
-      });
+      const currentPlaylist = playlistRef.current;
+      const existingIndex = currentPlaylist.findIndex(t => t.id === track.id);
+      if (existingIndex >= 0) {
+        setCurrentIndex(existingIndex);
+        currentIndexRef.current = existingIndex;
+      } else {
+        setPlaylist([...currentPlaylist, track]);
+        setCurrentIndex(currentPlaylist.length);
+        currentIndexRef.current = currentPlaylist.length;
+      }
+      setCurrentTrack(track);
+      setIsPlaying(true);
     }
   }, []);
 
@@ -148,46 +152,47 @@ function App() {
     if (!isMountedRef.current) return;
 
     if (randomTrack) {
-      setPlaylist(prev => {
-        const existingIndex = prev.findIndex(t => t.id === randomTrack.id);
-        if (existingIndex >= 0) {
-          setCurrentIndex(existingIndex);
-          currentIndexRef.current = existingIndex;
-          setCurrentTrack(randomTrack);
-          setIsPlaying(true);
-          return prev;
-        }
-        const newIndex = prev.length;
+      const currentPlaylist = playlistRef.current;
+      const existingIndex = currentPlaylist.findIndex(t => t.id === randomTrack.id);
+      if (existingIndex >= 0) {
+        setCurrentIndex(existingIndex);
+        currentIndexRef.current = existingIndex;
+        setCurrentTrack(randomTrack);
+        setIsPlaying(true);
+      } else {
+        const newIndex = currentPlaylist.length;
+        setPlaylist([...currentPlaylist, randomTrack]);
         setCurrentIndex(newIndex);
         currentIndexRef.current = newIndex;
         setCurrentTrack(randomTrack);
         setIsPlaying(true);
-        return [...prev, randomTrack];
-      });
+      }
     } else {
       const idx = currentIndexRef.current;
-      if (idx < playlist.length - 1) {
+      const currentPlaylist = playlistRef.current;
+      if (idx < currentPlaylist.length - 1) {
         const newIndex = idx + 1;
-        setCurrentTrack(playlist[newIndex]);
+        setCurrentTrack(currentPlaylist[newIndex]);
         setCurrentIndex(newIndex);
         currentIndexRef.current = newIndex;
         setIsPlaying(true);
       }
     }
-  }, [getRandomTrackFromSameArtist, playlist]);
+  }, [getRandomTrackFromSameArtist]);
 
   const previousTrack = useCallback(() => {
     if (!isMountedRef.current) return;
 
     const idx = currentIndexRef.current;
+    const currentPlaylist = playlistRef.current;
     if (idx > 0) {
       const newIndex = idx - 1;
-      setCurrentTrack(playlist[newIndex]);
+      setCurrentTrack(currentPlaylist[newIndex]);
       setCurrentIndex(newIndex);
       currentIndexRef.current = newIndex;
       setIsPlaying(true);
     }
-  }, [playlist]);
+  }, []);
 
   const musicContextValue = useMemo(() => ({
     currentTrack,
