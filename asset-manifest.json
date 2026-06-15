@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Muse/static/css/main.ac34025b.css",
-    "main.js": "/Muse/static/js/main.4fb9c89d.js",
+    "main.js": "/Muse/static/js/main.c6275fff.js",
     "index.html": "/Muse/index.html",
     "main.ac34025b.css.map": "/Muse/static/css/main.ac34025b.css.map",
-    "main.4fb9c89d.js.map": "/Muse/static/js/main.4fb9c89d.js.map"
+    "main.c6275fff.js.map": "/Muse/static/js/main.c6275fff.js.map"
   },
   "entrypoints": [
     "static/css/main.ac34025b.css",
-    "static/js/main.4fb9c89d.js"
+    "static/js/main.c6275fff.js"
   ]
 }
